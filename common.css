@@ -1,0 +1,81 @@
+/* 基础布局样式 */
+.layui-layout-body {
+    background-color: #f2f3f5;
+}
+.layui-header {
+    background-color: #1E9FFF !important;
+}
+.layui-logo {
+    color: #fff !important;
+    font-weight: bold !important;
+}
+.layui-nav-tree .layui-nav-itemed > a {
+    background-color: #e6f7ff !important;
+    color: #1E9FFF !important;
+}
+.layui-nav .layui-nav-item a {
+    color: #fff !important;
+}
+.layui-nav .layui-nav-item a:hover {
+    background-color: rgba(255,255,255,0.2) !important;
+}
+.layui-side-scroll .layui-nav {
+    background-color: #fff !important;
+}
+.layui-side-scroll .layui-nav-item a {
+    color: #333 !important;
+}
+.layui-side-scroll .layui-nav-item a:hover {
+    background-color: #f2f2f2 !important;
+}
+
+/* 通用组件样式 */
+.layui-card {
+    margin-bottom: 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.layui-card-header {
+    border-bottom: 1px solid #eee;
+}
+.layui-form-item {
+    margin-bottom: 20px;
+}
+.form-item-hint {
+    color: #888;
+    font-size: 12px;
+    margin-top: 5px;
+}
+.mt-20 {
+    margin-top: 20px;
+}
+.layui-flex {
+    display: flex;
+}
+.justify-between {
+    justify-content: space-between;
+}
+.items-center {
+    align-items: center;
+}
+.ml-3 {
+    margin-left: 10px;
+}
+.text-2xl {
+    font-size: 24px;
+}
+.text-gray-500 {
+    color: #888;
+}
+.text-primary {
+    color: #1E9FFF;
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 768px) {
+    .layui-col-md3, .layui-col-md4, .layui-col-md6 {
+        width: 100% !important;
+    }
+    .layui-nav-item {
+        display: block !important;
+    }
+}

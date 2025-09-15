@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>网页采集系统 - 任务配置</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="lib/layui-v2.6.3/css/layui.css">
+		<link rel="stylesheet" href="css/common.css">
+		<style>
+			/* 全局样式优化 */
+			body {
+				background-color: #f5f7fa;
+				font-family: "Microsoft YaHei", "Roboto", sans-serif;
+			}
+
+			.layui-layout-admin .layui-header {
+				background: linear-gradient(135deg, #1E9FFF 0%, #0A6EFF 100%);
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+			}
+
+			.layui-logo {
+				background: rgba(255, 255, 255, 0.15) !important;
+				border-radius: 0 4px 4px 0;
+				font-size: 18px;
+				letter-spacing: 1px;
+			}
+
+			.layui-nav-tree .layui-nav-itemed>a {
+				background-color: #E6F7FF !important;
+				color: #1E9FFF !important;
+				border-left: 3px solid #1E9FFF;
+			}
+
+			.layui-body {
+				background-color: #f5f7fa;
+				padding: 20px;
+			}
+
+			/* 卡片容器样式 */
+			.card-container {
+				background: #fff;
+				border-radius: 8px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+				padding: 25px;
+				margin-bottom: 20px;
+			}
+
+			.card-title {
+				font-size: 18px;
+				font-weight: 500;
+				color: #333;
+				margin-bottom: 20px;
+				padding-bottom: 15px;
+				border-bottom: 1px solid #f2f2f2;
+				display: flex;
+				align-items: center;
+			}
+
+			.card-title i {
+				color: #1E9FFF;
+				margin-right: 10px;
+				font-size: 20px;
+			}
+
+			/* 表单样式优化 */
+			.layui-form-item {
+				margin-bottom: 20px;
+			}
+
+			.layui-form-label {
+				color: #666;
+				font-weight: 500;
+				padding: 9px 15px;
+				width: 120px;
+			}
+
+			.layui-input,
+			.layui-select,
+			.layui-textarea {
+				border-radius: 4px;
+				border-color: #E6E6E6;
+				transition: all 0.2s;
+			}
+
+			.layui-input:focus,
+			.layui-select:focus,
+			.layui-textarea:focus {
+				border-color: #1E9FFF;
+				box-shadow: 0 0 0 2px rgba(30, 159, 255, 0.2);
+			}
+
+			.layui-form-select dl {
+				border-radius: 4px;
+				box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+			}
+
+			.layui-form-switch {
+				margin-top: 4px;
+			}
+
+			.layui-form-switch em {
+				width: 40px;
+			}
+
+			.layui-form-switch i {
+				left: 2px;
+				width: 14px;
+				height: 14px;
+			}
+
+			.layui-form-onswitch {
+				background-color: #1E9FFF;
+				border-color: #1E9FFF;
+			}
+
+			.layui-form-onswitch i {
+				left: 24px;
+			}
+
+			/* 按钮样式优化 */
+			.layui-btn {
+				border-radius: 4px;
+				padding: 0 18px;
+				height: 36px;
+				line-height: 36px;
+				transition: all 0.2s;
+			}
+
+			.layui-btn-primary:hover {
+				border-color: #1E9FFF;
+				color: #1E9FFF;
+			}
+
+			.layui-btn-normal {
+				background-color: #1E9FFF;
+			}
+
+			.layui-btn-normal:hover {
+				background-color: #0A6EFF;
+			}
+
+			.layui-btn-danger:hover {
+				background-color: #e53e3e;
+			}
+
+			.btn-group {
+				display: flex;
+				gap: 10px;
+				justify-content: flex-end;
+				margin-top: 30px;
+				padding-top: 15px;
+				border-top: 1px solid #F2F2F2;
+			}
+
+			/*  任务列表样式 */
+			.task-list-container {
+				margin-top: 30px;
+			}
+
+			.table-actions {
+				display: flex;
+				gap: 8px;
+			}
+
+			.table-action-btn {
+				color: #1E9FFF;
+				cursor: pointer;
+				font-size: 14px;
+				transition: color 0.2s;
+			}
+
+			.table-action-btn:hover {
+				color: #0A6EFF;
+			}
+
+			.table-action-btn.danger {
+				color: #F5222D;
+			}
+
+			.table-action-btn.danger:hover {
+				color: #E53E3E;
+			}
+
+			.layui-table {
+				border-radius: 8px;
+				overflow: hidden;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+			}
+
+			.layui-table th {
+				background-color: #F7FAFC;
+				color: #666;
+				font-weight: 500;
+			}
+
+			.layui-table td,
+			.layui-table th {
+				padding: 12px 15px;
+			}
+
+			/* 状态标签样式 */
+			.status-tag {
+				display: inline-block;
+				padding: 2px 8px;
+				border-radius: 4px;
+				font-size: 12px;
+				font-weight: 500;
+			}
+
+			.status-enabled {
+				background-color: #F6FFED;
+				color: #52C41A;
+				border: 1px solid #E1F3D8;
+			}
+
+			.status-disabled {
+				background-color: #FFF2F0;
+				color: #F5222D;
+				border: 1px solid #FFE3E3;
+			}
+
+			/* 提示信息样式 */
+			.form-hint {
+				color: #888;
+				font-size: 12px;
+				margin-top: 5px;
+				margin-left: 135px;
+				line-height: 1.5;
+			}
+
+			.form-hint i {
+				margin-right: 4px;
+			}
+
+			/* 响应式优化 */
+			@media screen and (max-width: 768px) {
+				.layui-form-label {
+					width: 100px;
+				}
+
+				.form-hint {
+					margin-left: 115px;
+				}
+
+				.btn-group {
+					flex-wrap: wrap;
+				}
+
+				.layui-btn {
+					flex: 1;
+					min-width: 100px;
+				}
+			}
+		</style>
+	</head>
+	<body class="layui-layout-body">
+		<div class="layui-layout layui-layout-admin">
+			<!-- 顶部导航 -->
+			<div class="layui-header">
+				<div class="layui-logo">网页采集系统</div>
+				<ul class="layui-nav layui-layout-left">
+					<li class="layui-nav-item layui-nav-itemed"><a href="index.html">首页</a></li>
+					<li class="layui-nav-item"><a href="task-config.html">任务配置</a></li>
+					<li class="layui-nav-item"><a href="crawl-rules.html">采集规则</a></li>
+					<li class="layui-nav-item"><a href="task-management.html">任务管理</a></li>
+					<li class="layui-nav-item"><a href="data-preview.html">数据预览</a></li>
+					<li class="layui-nav-item"><a href="data-export.html">数据导出</a></li>
+					<li class="layui-nav-item"><a href="system-settings.html">系统设置</a></li>
+					<li class="layui-nav-item"><a href="log-view.html">日志查看</a></li>
+				</ul>
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<img src="lib/layui-v2.6.3/images/face.jpg" class="layui-nav-img"
+								style="border-radius: 50%;">
+							管理员
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="javascript:;">个人中心</a></dd>
+							<dd><a href="javascript:;">修改密码</a></dd>
+							<dd><a href="login.html">退出登录</a></dd>
+						</dl>
+					</li>
+				</ul>
+			</div>
+
+			<!-- 侧边栏 -->
+			<div class="layui-side">
+				<div class="layui-side-scroll">
+					<ul class="layui-nav layui-nav-tree" lay-filter="sideNav">
+						<li class="layui-nav-item layui-nav-itemed">
+							<a href="index.html"><i class="fa fa-home"></i> 系统首页</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="task-config.html"><i class="fa fa-cog"></i> 任务配置</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="crawl-rules.html"><i class="fa fa-filter"></i> 采集规则</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="task-management.html"><i class="fa fa-tasks"></i> 任务管理</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="data-preview.html"><i class="fa fa-table"></i> 数据预览</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="data-export.html"><i class="fa fa-download"></i> 数据导出</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="system-settings.html"><i class="fa fa-sliders"></i> 系统设置</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="log-view.html"><i class="fa fa-history"></i> 日志查看</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- 主内容区 -->
+			<div class="layui-body">
+				<!-- 任务配置表单卡片 -->
+				<div class="card-container">
+					<div class="card-title">
+						<i class="layui-icon layui-icon-cog"></i>
+						任务配置
+					</div>
+					<form class="layui-form" lay-filter="taskForm" id="taskForm">
+						<div class="layui-form-item">
+							<label class="layui-form-label">任务名称 <span style="color: #F5222D;">*</span></label>
+							<div class="layui-input-block">
+								<input type="text" name="taskName" lay-verify="required" placeholder="请输入任务名称"
+									autocomplete="off" class="layui-input">
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								请输入具有辨识度的任务名称，便于后续管理
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">目标URL <span style="color: #F5222D;">*</span></label>
+							<div class="layui-input-block">
+								<input type="text" name="targetUrl" lay-verify="required|url"
+									placeholder="例如:https://www.example.com" autocomplete="off" class="layui-input">
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								请输入需要采集的网页的URL，支持HTTP和HTTPS协议
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">采集规则</label>
+							<div class="layui-input-block">
+								<select name="crawRuleId" lay-verify="required">
+									<option value="">请选择采集规则</option>
+									<option value="1">通用网页内容采集</option>
+									<option value="2">新闻文章采集</option>
+									<option value="3">电商产品信息采集</option>
+									<option value="4">社交媒体评论采集</option>
+									<option value="5">自定义规则</option>
+								</select>
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								选择适合当前任务的采集规则，可在“采集规则”页面管理
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">采集频率</label>
+							<div class="layui-input-block">
+								<select name="crawlFrequency">
+									<option value="once">仅采集一次</option>
+									<option value="hourly">每小时</option>
+									<option value="daily" selected>每天</option>
+									<option value="weekly">每周</option>
+									<option value="monthly">每月</option>
+									<option value="custom">自定义</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">采集深度</label>
+							<div class="layui-input-block">
+								<select name="crawDepth">
+									<option value="1">仅当前页面</option>
+									<option value="2" selected>当前页面+1级子页面</option>
+									<option value="3">当前页面+2级子页面</option>
+									<option value="4">当前页面+3级子页面</option>
+									<option value="all">所有子页面/option>
+								</select>
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								采集深度越大，获取的数据越多，但耗时也越长
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">线程数量</label>
+							<div class="layui-input-block">
+								<select name="threadCount">
+									<option value="1">1线程（较慢，适合小任务）</option>
+									<option value="2">2线程</option>
+									<option value="3" selected>3线程</option>
+									<option value="5">5线程</option>
+									<option value="10">10线程（较快，可能触发反爬）</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">超时时间</label>
+							<div class="layui-input-block">
+								<select name="timeout">
+									<option value="10">10秒</option>
+									<option value="20">20秒</option>
+									<option value="30" selected>30秒</option>
+									<option value="60">60秒</option>
+									<option value="120">120秒</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">是否启用代理</label>
+							<div class="layui-input-block">
+								<input type="checkbox" name="useProxy" lay-skin="switch" lay-text="启用|禁用">
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								启用代理可以降低被目标网站识别和封锁的风险
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">任务描述</label>
+							<div class="layui-input-block">
+								<textarea name="taskDescription" placeholder="请输入任务信息" class="layui-textarea"
+									rows="3"></textarea>
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">任务状态</label>
+							<div class="layui-input-block">
+								<input type="checkbox" name="taskStatus" lay-skin="switch" lay-text="启用|禁用" checked>
+							</div>
+						</div>
+
+						<div class="btn-group">
+							<button type="reset" class="layui-btn layui-btn-primary">
+								<i class="layui-icon layui-icon-refresh"></i> 重置
+							</button>
+							<button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveTask">
+								<i class="layui-icon layui-icon-save"></i> 保存任务
+							</button>
+							<button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveAndRun">
+								<i class="layui-icon layui-icon-paly"></i> 保存并运行
+							</button>
+						</div>
+					</form>
+				</div>
+
+				<!-- 已配置任务列表 -->
+				<div class="task-list-container card-container">
+					<div class="card-title">
+						<i class="layui-icon layui-icon-list"></i>
+						已配置任务列表
+					</div>
+					<div class="title-actions">
+						<button class="layui-btn layui-btn-primary" id="refreshTaskList">
+							<i class="layui-icon layui-icon-refresh"></i> 刷新列表
+						</button>
+					</div>
+					<table class="layui-table" lay-size="sm">
+						<thead>
+							<tr>
+								<th style="width: 60px;">ID</th>
+								<th>任务名称</th>
+								<th>目标URL</th>
+								<th>采集规则</th>
+								<th>采集频率</th>
+								<th>状态</th>
+								<th>创建时间</th>
+								<th style="width: 160px;">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1</td>
+								<td>新闻网站采集</td>
+								<td>http://news.example.com</td>
+								<td>新闻文章采集</td>
+								<td>每天</td>
+								<td><span class="status-tag status-enabled">启用</span></td>
+								<td>2024-05-10</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn edit-task" data-id="1">
+											<i class="layui-icon layui-icon-edit"></i> 编辑
+										</span>
+										<span class="table-action-btn delete-task" data-id="1">
+											<i class="layui-icon layui-icon-delete"></i> 删除
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>2</td>
+								<td>电商价格监控</td>
+								<td>http://mall.example.com</td>
+								<td>电商产品信息采集</td>
+								<td>每小时</td>
+								<td><span class="status-tag status-enabled">启用</span></td>
+								<td>2024-05-08</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn edit-task" data-id="2">
+											<i class="layui-icon layui-icon-edit"></i> 编辑
+										</span>
+										<span class="table-action-btn delete-task" data-id="2">
+											<i class="layui-icon layui-icon-delete"></i> 删除
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>3</td>
+								<td>社交媒体评论采集</td>
+								<td>http://social.example.com</td>
+								<td>社交媒体评论采集</td>
+								<td>每天</td>
+								<td><span class="status-tag status-disabled">禁用</span></td>
+								<td>2024-05-05</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn edit-task" data-id="3">
+											<i class="layui-icon layui-icon-edit"></i> 编辑
+										</span>
+										<span class="table-action-btn delete-task" data-id="3">
+											<i class="layui-icon layui-icon-delete"></i> 删除
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>4</td>
+								<td>论坛帖子采集</td>
+								<td>http://forum.example.com</td>
+								<td>通用网页内容采集</td>
+								<td>每周</td>
+								<td><span class="status-tag status-enabled">启用</span></td>
+								<td>2024-05-01</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn edit-task" data-id="4">
+											<i class="layui-icon layui-icon-edit"></i> 编辑
+										</span>
+										<span class="table-action-btn delete-task" data-id="4">
+											<i class="layui-icon layui-icon-delete"></i> 删除
+										</span>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<!-- 分页 -->
+					<div class="layui-box layui-laypage layui-laypage-default mt-15" id="taskPage">
+						<a class="layui-laypage-prev layui-disabled">上一页</a>
+						<span class="layui-laypage-curr"><em class="layui-laypage-em"></em><em>1</em></span>
+						<a href="javascript:;">2</a>
+						<a href="javascript:;">3</a>
+						<a class="layui-laypage-next">下一页</a>
+						<span class="layui-laypage-count">共 12 页</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+		<script src="lib/layui-v2.6.3/layui.js"></script>
+		<script>
+			layui.use(['element', 'layer', 'form', 'laypage'], function() {
+				var element = layui.element;
+				var layer = layui.layer;
+				var form = layui.form;
+				var laypage = layui.laypage;
+				var $ = layui.$;
+
+				// 验证登录状态
+				if (localStorage.getItem('isLogin')) {
+					layer.msg('请先登录', {
+						icon: 2
+					}, function() {
+						window.location.href = 'login.html';
+					});
+				}
+
+				// 表单提交，保存任务
+				form.on('submit(saveTask)', function(data) {
+					// 模拟表单提交
+					layer.load(2);
+					setTimeout(function() {
+						layer.closeAll("loading");
+						layer.msg('任务保存成功', {
+							icon: 1
+						}, function() {
+							refreshTaskList();
+						});
+					}, 800);
+					return false;
+				});
+
+				// 表单提交 - 保存并运行
+				form.on('shubmit(saveAndRun)', function(data) {
+					// 模拟表单提交和任务启动
+					layer.load(2);
+					setTimeout(function() {
+						layer.closeAll('loading');
+						layer.confirm('任务保存成功，是否立即跳转到任务管理页面查看运行状态？', {
+							icon: 3,
+							title: '提示'
+						}, function(index) {
+							layer.close(index);
+							window.location.href = 'task-management.html';
+						}, function(index) {
+							// 如果用户取消跳转，则刷新任务列表
+							layer.close(index);
+							refreshTaskList();
+						});
+					}, 800);
+					return false;
+				});
+
+				// 编辑任务
+				$('.edit-task').click(function() {
+					var taskId = $(this).data('id');
+					var taskName = $(this).closest('tr').find('td:eq(1)').text();
+
+					// 模拟加载任务数据
+					layer.load(2);
+					setTimeout(function() {
+						layer.closeAll('loading');
+						layer.msg('正在编辑任务：' + taskName, {
+							icon: 0
+						});
+
+						// 这里可以添加填充表单数据的逻辑
+						// 例如：$('#taskForm [name="taskName"]').val(taskName);
+					}, 500);
+				});
+
+				// 删除任务
+				$('.delete-task').click(function() {
+					var taskId = $(this).data('id');
+					var taskName = $(this).closest('tr').find('td:eq(1)').text();
+
+					layer.confirm('确定要删除任务【' + taskName + '】吗？此操作不可恢复', {
+						icon: 3,
+						title: '警告'
+					}, function(index) {
+						layer.close(index);
+
+						// 模拟删除操作
+						layer.load(2);
+						setTimeout(function() {
+							layer.closeAll('loading');
+							layer.msg('任务【' + taskName + '】已删除', {
+								icon: 1
+							});
+							// 从表格中移除该任务行
+							$('.edit-task[data-id="' + taskId + '"]').closest('tr').remove();
+						}, 800);
+					});
+				});
+
+				// 分页渲染
+				laypage.render({
+					elem: 'taskPage',
+					count: 12,
+					limit: 4,
+					curr: 1,
+					layout: ['prev', 'page', 'next', 'count'],
+					jump: function(obj, first) {
+						if (!first) {
+							layer.msg('切换到第' + obj.curr + '页', {
+								icon: 0
+							});
+						}
+					}
+				});
+
+				// 表单输入提示效果
+				$('.layui-input, .layui-textarea').focus(function() {
+					$(this).closest('.layui-form-item').addClass('layui-form-item-focus');
+				}).blur(function() {
+					$(this).closest('.layui-form-item').removeClass('layui-form-item-focus');
+				});
+
+				// 刷新任务列表按钮点击事件
+				$('#refreshTaskList').click(function() {
+					refreshTaskList();
+				});
+
+				// 刷新任务列表函数
+				function refreshTaskList() {
+					// 获取表格元素
+					var $table = $('#taskTable');
+					var $tbody = $table.find('tbody');
+
+					// 显示加载动画
+					layer.load(2);
+
+					// 模拟数据加载延迟
+					setTimeout(function() {
+						// 保存当前滚动位置
+						var scrollTop = $(window).scrollTop();
+
+						// 清空表格内容，显示加载中提示
+						$tbody.html(
+							'<tr><td colspan="8" style="text-align: center; padding: 30px;"><i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i> 正在加载任务数据...</td></tr>'
+							);
+
+						// 模拟数据加载
+						setTimeout(function() {
+							// 恢复表格内容（实际应用中这里应该是从服务器获取最新数据）
+							$tbody.html(`
+				                            <tr>
+				                                <td>1</td>
+				                                <td>新闻网站采集</td>
+				                                <td>https://news.example.com</td>
+				                                <td>新闻文章采集</td>
+				                                <td>每天</td>
+				                                <td><span class="status-tag status-enabled">启用</span></td>
+				                                <td>2024-05-10</td>
+				                                <td>
+				                                    <div class="table-actions">
+				                                        <span class="table-action-btn edit-task" data-id="1">
+				                                            <i class="layui-icon layui-icon-edit"></i> 编辑
+				                                        </span>
+				                                        <span class="table-action-btn delete-task" data-id="1">
+				                                            <i class="layui-icon layui-icon-delete"></i> 删除
+				                                        </span>
+				                                    </div>
+				                                </td>
+				                            </tr>
+				                            <tr>
+				                                <td>2</td>
+				                                <td>电商价格监控</td>
+				                                <td>https://mall.example.com</td>
+				                                <td>电商产品信息采集</td>
+				                                <td>每小时</td>
+				                                <td><span class="status-tag status-enabled">启用</span></td>
+				                                <td>2024-05-08</td>
+				                                <td>
+				                                    <div class="table-actions">
+				                                        <span class="table-action-btn edit-task" data-id="2">
+				                                            <i class="layui-icon layui-icon-edit"></i> 编辑
+				                                        </span>
+				                                        <span class="table-action-btn delete-task" data-id="2">
+				                                            <i class="layui-icon layui-icon-delete"></i> 删除
+				                                        </span>
+				                                    </div>
+				                                </td>
+				                            </tr>
+				                            <tr>
+				                                <td>3</td>
+				                                <td>社交媒体评论采集</td>
+				                                <td>https://social.example.com</td>
+				                                <td>社交媒体评论采集</td>
+				                                <td>每天</td>
+				                                <td><span class="status-tag status-disabled">禁用</span></td>
+				                                <td>2024-05-05</td>
+				                                <td>
+				                                    <div class="table-actions">
+				                                        <span class="table-action-btn edit-task" data-id="3">
+				                                            <i class="layui-icon layui-icon-edit"></i> 编辑
+				                                        </span>
+				                                        <span class="table-action-btn delete-task" data-id="3">
+				                                            <i class="layui-icon layui-icon-delete"></i> 删除
+				                                        </span>
+				                                    </div>
+				                                </td>
+				                            </tr>
+				                            <tr>
+				                                <td>4</td>
+				                                <td>论坛帖子采集</td>
+				                                <td>https://forum.example.com</td>
+				                                <td>通用网页内容采集</td>
+				                                <td>每周</td>
+				                                <td><span class="status-tag status-enabled">启用</span></td>
+				                                <td>2024-05-01</td>
+				                                <td>
+				                                    <div class="table-actions">
+				                                        <span class="table-action-btn edit-task" data-id="4">
+				                                            <i class="layui-icon layui-icon-edit"></i> 编辑
+				                                        </span>
+				                                        <span class="table-action-btn delete-task" data-id="4">
+				                                            <i class="layui-icon layui-icon-delete"></i> 删除
+				                                        </span>
+				                                    </div>
+				                                </td>
+				                            </tr>
+				                        `);
+
+							// 恢复滚动位置
+							$(window).scrollTop(scrollTop);
+
+							// 关闭加载动画
+							layer.closeAll('loading');
+
+							// 显示刷新成功提示
+							layer.msg('任务列表已更新', {
+								icon: 1,
+								time: 1500
+							});
+
+							// 重新绑定事件（因为表格内容被重新生成）
+							bindTaskActions();
+						}, 800);
+					}, 500);
+				}
+
+				// 绑定任务操作事件（编辑和删除）
+				function bindTaskActions() {
+					// 重新绑定编辑任务事件
+					$('.edit-task').off('click').click(function() {
+						var taskId = $(this).data('id');
+						var taskName = $(this).closest('tr').find('td:eq(1)').text();
+
+						// 模拟加载任务数据
+						layer.load(2);
+						setTimeout(function() {
+							layer.closeAll('loading');
+							layer.msg('正在编辑任务：' + taskName, {
+								icon: 0
+							});
+						}, 500);
+					});
+
+					// 重新绑定删除任务事件
+					$('.delete-task').off('click').click(function() {
+						var taskId = $(this).data('id');
+						var taskName = $(this).closest('tr').find('td:eq(1)').text();
+
+						layer.confirm('确定要删除任务【' + taskName + '】吗？此操作不可恢复', {
+							icon: 3,
+							title: '警告'
+						}, function(index) {
+							layer.close(index);
+
+							// 模拟删除操作
+							layer.load(2);
+							setTimeout(function() {
+								layer.closeAll('loading');
+								layer.msg('任务【' + taskName + '】已删除', {
+									icon: 1
+								});
+								// 从表格中移除该任务行
+								$('.edit-task[data-id="' + taskId + '"]').closest('tr').remove();
+							}, 800);
+						});
+					});
+				}
+
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>网页采集系统 - 首页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="lib/layui-v2.6.3/css/layui.css">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        /* 全局美化 */
+        body {
+            background-color: #f5f7fa;
+            font-family: "Microsoft YaHei", "Roboto", sans-serif;
+        }
+        .layui-layout-admin .layui-header {
+            background: linear-gradient(135deg, #1E9FFF 0%, #0A6EFF 100%);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .layui-logo {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-radius: 0 4px 4px 0;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+        .layui-nav-tree .layui-nav-itemed > a {
+            background-color: #e6f7ff !important;
+            color: #1E9FFF !important;
+            border-left: 3px solid #1E9FFF;
+        }
+        .layui-body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+
+        /* 数据概览卡片美化 */
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+        /* 卡片渐变装饰 */
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #1E9FFF, #0A6EFF);
+        }
+        .stat-title {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .stat-title i {
+            font-size: 16px;
+            margin-right: 8px;
+            color: #1E9FFF;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1E9FFF;
+            margin-bottom: 8px;
+        }
+        .stat-desc {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+        }
+        .stat-desc.text-success {
+            color: #52C41A;
+        }
+        .stat-desc.text-danger {
+            color: #F5222D;
+        }
+        .stat-desc i {
+            font-size: 14px;
+            margin-right: 4px;
+        }
+
+        /* 模块入口卡片美化 */
+        .module-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            display: block;
+            color: #333;
+        }
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            color: #1E9FFF;
+        }
+        .module-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #e6f7ff, #d1eaff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+        }
+        .module-icon i {
+            font-size: 24px;
+            color: #1E9FFF;
+        }
+        .module-info {
+            flex: 1;
+        }
+        .module-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .module-desc {
+            font-size: 13px;
+            color: #888;
+            transition: color 0.3s;
+        }
+        .module-card:hover .module-desc {
+            color: #1E9FFF;
+        }
+
+        /* 最近任务卡片美化 */
+        .task-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .task-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f2f2f2;
+        }
+        .task-card-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        .task-card-title i {
+            margin-right: 8px;
+            color: #1E9FFF;
+        }
+        .task-card-more {
+            font-size: 13px;
+            color: #1E9FFF;
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px dashed #f2f2f2;
+        }
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        .task-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        .status-running {
+            background-color: #52C41A;
+        }
+        .status-paused {
+            background-color: #FAAD14;
+        }
+        .status-failed {
+            background-color: #F5222D;
+        }
+        .task-info {
+            flex: 1;
+        }
+        .task-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .task-meta {
+            font-size: 12px;
+            color: #888;
+            display: flex;
+            align-items: center;
+        }
+        .task-meta i {
+            margin-right: 4px;
+            font-size: 12px;
+        }
+        .task-progress {
+            width: 120px;
+            margin-right: 16px;
+        }
+        .task-action {
+            font-size: 13px;
+            color: #1E9FFF;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .task-action i {
+            margin-right: 4px;
+            font-size: 13px;
+        }
+
+        /* 数据趋势图容器美化 */
+        .chart-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            height: 100%;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .chart-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        .chart-title i {
+            margin-right: 8px;
+            color: #1E9FFF;
+        }
+        .chart-date {
+            font-size: 13px;
+            color: #888;
+        }
+        #dataTrendChart {
+            width: 100%;
+            height: 260px;
+        }
+
+        /* 响应式适配优化 */
+        @media screen and (max-width: 992px) {
+            .layui-col-md3, .layui-col-md4, .layui-col-md6, .layui-col-md8 {
+                width: 50% !important;
+            }
+            .task-progress {
+                width: 80px;
+            }
+        }
+        @media screen and (max-width: 768px) {
+            .layui-col-md3, .layui-col-md4, .layui-col-md6, .layui-col-md8 {
+                width: 100% !important;
+            }
+            .stat-value {
+                font-size: 28px;
+            }
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .task-progress {
+                width: 100%;
+                margin: 8px 0;
+            }
+            .task-action {
+                margin-top: 8px;
+            }
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <!-- 顶部导航 -->
+        <div class="layui-header">
+            <div class="layui-logo">网页采集系统</div>
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item layui-nav-itemed"><a href="index.html">首页</a></li>
+                <li class="layui-nav-item"><a href="task-config.html">任务配置</a></li>
+                <li class="layui-nav-item"><a href="crawl-rules.html">采集规则</a></li>
+                <li class="layui-nav-item"><a href="task-management.html">任务管理</a></li>
+                <li class="layui-nav-item"><a href="data-preview.html">数据预览</a></li>
+                <li class="layui-nav-item"><a href="data-export.html">数据导出</a></li>
+                <li class="layui-nav-item"><a href="system-settings.html">系统设置</a></li>
+                <li class="layui-nav-item"><a href="log-view.html">日志查看</a></li>
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">
+                        <img src="lib/layui-v2.6.3/images/face.jpg" class="layui-nav-img" style="border-radius: 50%;">
+                        管理员
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">个人中心</a></dd>
+                        <dd><a href="javascript:;">修改密码</a></dd>
+                        <dd><a href="login.html">退出登录</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="layui-side">
+            <div class="layui-side-scroll">
+                <ul class="layui-nav layui-nav-tree" lay-filter="sideNav">
+                    <li class="layui-nav-item layui-nav-itemed">
+                        <a href="index.html"><i class="fa fa-home"></i> 系统首页</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="task-config.html"><i class="fa fa-cog"></i> 任务配置</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="crawl-rules.html"><i class="fa fa-filter"></i> 采集规则</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="task-management.html"><i class="fa fa-tasks"></i> 任务管理</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="data-preview.html"><i class="fa fa-table"></i> 数据预览</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="data-export.html"><i class="fa fa-download"></i> 数据导出</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="system-settings.html"><i class="fa fa-sliders"></i> 系统设置</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="log-view.html"><i class="fa fa-history"></i> 日志查看</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="layui-body">
+            <!-- 数据概览 -->
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md3">
+                    <div class="stat-card">
+                        <div class="stat-title">
+                            <i class="layui-icon layui-icon-tasks"></i>
+                            总任务数
+                        </div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-desc text-success">
+                            <i class="layui-icon layui-icon-up"></i>
+                            2 较昨日
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <div class="stat-card">
+                        <div class="stat-title">
+                            <i class="layui-icon layui-icon-play"></i>
+                            运行中任务
+                        </div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-desc text-danger">
+                            <i class="layui-icon layui-icon-down"></i>
+                            1 较昨日
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <div class="stat-card">
+                        <div class="stat-title">
+                            <i class="layui-icon layui-icon-database"></i>
+                            已采集数据
+                        </div>
+                        <div class="stat-value">1,286</div>
+                        <div class="stat-desc text-success">
+                            <i class="layui-icon layui-icon-up"></i>
+                            156 较昨日
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <div class="stat-card">
+                        <div class="stat-title">
+                            <i class="layui-icon layui-icon-warning"></i>
+                            异常任务
+                        </div>
+                        <div class="stat-value">1</div>
+                        <div class="stat-desc">
+                            <i class="layui-icon layui-icon-minus"></i>
+                            0 较昨日
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据趋势 + 最近任务 -->
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md8">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i class="layui-icon layui-icon-line-chart"></i>
+                                采集数据趋势（近7天）
+                            </div>
+                            <div class="chart-date">2024-05-09 至 2024-05-15</div>
+                        </div>
+                        <div id="dataTrendChart"></div>
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="task-card">
+                        <div class="task-card-header">
+                            <div class="task-card-title">
+                                <i class="layui-icon layui-icon-list"></i>
+                                最近任务
+                            </div>
+                            <a href="task-management.html" class="task-card-more">查看全部</a>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-item">
+                                <div class="task-status status-running"></div>
+                                <div class="task-info">
+                                    <div class="task-name">新闻网站采集</div>
+                                    <div class="task-meta">
+                                        <i class="layui-icon layui-icon-clock"></i>
+                                        2024-05-15 14:30
+                                    </div>
+                                </div>
+                                <div class="task-progress">
+                                    <div class="layui-progress" lay-showpercent="no" lay-filter="task-progress-1">
+                                        <div class="layui-progress-bar" lay-percent="65%"></div>
+                                    </div>
+                                </div>
+                                <div class="task-action">
+                                    <i class="layui-icon layui-icon-eye"></i>
+                                    查看
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-status status-paused"></div>
+                                <div class="task-info">
+                                    <div class="task-name">论坛帖子采集</div>
+                                    <div class="task-meta">
+                                        <i class="layui-icon layui-icon-clock"></i>
+                                        2024-05-14 16:20
+                                    </div>
+                                </div>
+                                <div class="task-progress">
+                                    <div class="layui-progress" lay-showpercent="no" lay-filter="task-progress-2">
+                                        <div class="layui-progress-bar" lay-percent="30%"></div>
+                                    </div>
+                                </div>
+                                <div class="task-action">
+                                    <i class="layui-icon layui-icon-play"></i>
+                                    启动
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-status status-failed"></div>
+                                <div class="task-info">
+                                    <div class="task-name">社交媒体评论采集</div>
+                                    <div class="task-meta">
+                                        <i class="layui-icon layui-icon-clock"></i>
+                                        2024-05-15 09:42
+                                    </div>
+                                </div>
+                                <div class="task-progress">
+                                    <div class="layui-progress" lay-showpercent="no" lay-filter="task-progress-3">
+                                        <div class="layui-progress-bar" lay-percent="45%"></div>
+                                    </div>
+                                </div>
+                                <div class="task-action">
+                                    <i class="layui-icon layui-icon-refresh"></i>
+                                    重试
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速模块入口 -->
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md3">
+                    <a href="task-config.html" class="module-card">
+                        <div class="layui-flex items-center">
+                            <div class="module-icon">
+                                <i class="layui-icon layui-icon-cog"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-name">任务配置</div>
+                                <div class="module-desc">新建/编辑采集任务</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="layui-col-md3">
+                    <a href="crawl-rules.html" class="module-card">
+                        <div class="layui-flex items-center">
+                            <div class="module-icon">
+                                <i class="layui-icon layui-icon-filter"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-name">采集规则</div>
+                                <div class="module-desc">配置CSS选择器</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="layui-col-md3">
+                    <a href="task-management.html" class="module-card">
+                        <div class="layui-flex items-center">
+                            <div class="module-icon">
+                                <i class="layui-icon layui-icon-tasks"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-name">任务管理</div>
+                                <div class="module-desc">启动/暂停任务</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="layui-col-md3">
+                    <a href="data-preview.html" class="module-card">
+                        <div class="layui-flex items-center">
+                            <div class="module-icon">
+                                <i class="layui-icon layui-icon-table"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-name">数据预览</div>
+                                <div class="module-desc">查看采集结果</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="layui-col-md3">
+                    <a href="data-export.html" class="module-card">
+                        <div class="layui-flex items-center">
+                            <div class="module-icon">
+                                <i class="layui-icon layui-icon-download"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-name">数据导出</div>
+                                <div class="module-desc">导出Excel/CSV/JSON</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="layui-col-md3">
+                    <a href="system-settings.html" class="module-card">
+                        <div class="layui-flex items-center">
+                            <div class="module-icon">
+                                <i class="layui-icon layui-icon-set"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-name">系统设置</div>
+                                <div class="module-desc">配置系统参数</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="layui-col-md3">
+                    <a href="log-view.html" class="module-card">
+                        <div class="layui-flex items-center">
+                            <div class="module-icon">
+                                <i class="layui-icon layui-icon-file-text"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-name">日志查看</div>
+                                <div class="module-desc">查看运行日志</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="layui-col-md3">
+                    <a href="javascript:;" class="module-card">
+                        <div class="layui-flex items-center">
+                            <div class="module-icon">
+                                <i class="layui-icon layui-icon-help"></i>
+                            </div>
+                            <div class="module-info">
+                                <div class="module-name">帮助中心</div>
+                                <div class="module-desc">查看使用指南</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+    <script src="lib/layui-v2.6.3/layui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script>
+        layui.use(['element', 'layer', 'form'], function(){
+            var element = layui.element;
+            var layer = layui.layer;
+            var form = layui.form;
+            var $ = layui.$;
+
+            // 验证登录状态
+            if(localStorage.getItem('isLogin')){
+                layer.msg('请先登录', {icon: 2}, function(){
+                    window.location.href = 'login.html';
+                });
+            }
+
+            // 初始化进度条
+            element.render('progress', 'task-progress-1');
+            element.render('progress', 'task-progress-2');
+            element.render('progress', 'task-progress-3');
+
+            // 初始化数据趋势图
+            var chartDom = document.getElementById('dataTrendChart');
+            var myChart = echarts.init(chartDom);
+            var option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['5/9', '5/10', '5/11', '5/12', '5/13', '5/14', '5/15'],
+                    axisLine: {
+                        lineStyle: {
+                            color: '#f2f2f2'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#888'
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: {
+                        lineStyle: {
+                            color: '#f2f2f2'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#888'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: '#f2f2f2'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: '采集数据量',
+                        type: 'bar',
+                        data: [120, 190, 160, 210, 180, 240, 286],
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#1E9FFF' },
+                                { offset: 1, color: '#0A6EFF' }
+                            ]),
+                            borderRadius: 4
+                        },
+                        barWidth: '40%'
+                    },
+                    {
+                        name: '活跃任务数',
+                        type: 'line',
+                        data: [6, 7, 8, 7, 8, 8, 8],
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        lineStyle: {
+                            color: '#1E9FFF',
+                            width: 2
+                        },
+                        itemStyle: {
+                            color: '#fff',
+                            borderColor: '#1E9FFF',
+                            borderWidth: 2
+                        },
+                        markLine: {
+                            lineStyle: {
+                                color: '#f2f2f2'
+                            },
+                            data: [
+                                { type: 'average', name: '平均值' }
+                            ]
+                        }
+                    }
+                ]
+            };
+            myChart.setOption(option);
+
+            // 窗口大小变化时重绘图表
+            window.addEventListener('resize', function() {
+                myChart.resize();
+            });
+
+            // 模块卡片点击效果增强
+            $('.module-card').click(function(e) {
+                // 非链接卡片（帮助中心）显示提示
+                if($(this).attr('href') === 'javascript:;'){
+                    e.preventDefault();
+                    layer.msg('帮助中心建设中，敬请期待', {icon: 0});
+                }
+            });
+
+            // 最近任务操作
+            $('.task-action').click(function() {
+                var actionText = $(this).text().trim();
+                var taskName = $(this).closest('.task-item').find('.task-name').text();
+                
+                if(actionText === '查看'){
+                    window.location.href = 'task-management.html';
+                } else if(actionText === '启动' || actionText === '重试'){
+                    layer.msg('任务【' + taskName + '】' + actionText + '成功', {icon: 1});
+                    // 更新状态
+                    $(this).closest('.task-item').find('.task-status')
+                        .removeClass('status-paused status-failed')
+                        .addClass('status-running');
+                    $(this).html('<i class="layui-icon layui-icon-eye"></i> 查看');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

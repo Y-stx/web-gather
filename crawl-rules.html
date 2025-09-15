@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>网页采集系统 - 采集规则</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="lib/layui-v2.6.3/css/layui.css">
+		<link rel="stylesheet" href="css/common.css">
+		<style>
+			/* 全局样式优化 */
+			body {
+				background-color: #f5f7fa;
+				font-family: "Microsoft YaHei", "Roboto", sans-serif;
+			}
+
+			.layui-layout-admin .layui-header {
+				background: linear-gradient(135deg, #1E9FFF 0%, #0A6EFF 100%);
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+			}
+
+			.layui-logo {
+				background: rgba(255, 255, 255, 0.15) !important;
+				border-radius: 0 4px 4px 0;
+				font-size: 18px;
+				letter-spacing: 1px;
+			}
+
+			.layui-nav-tree .layui-nav-itemed>a {
+				background-color: #e6f7ff !important;
+				color: #1E9FFF !important;
+				border-left: 3px solid #1E9FFF;
+			}
+
+			.layui-body {
+				background-color: #f5f7fa;
+				padding: 20px;
+			}
+
+			/* 卡片容器样式 */
+			.card-container {
+				background: #fff;
+				border-radius: 8px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+				padding: 25px;
+				margin-bottom: 20px;
+			}
+
+			.card-title {
+				font-size: 18px;
+				font-weight: 500;
+				color: #333;
+				margin-bottom: 20px;
+				padding-bottom: 15px;
+				border-bottom: 1px solid #f2f2f2;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			.card-title i {
+				color: #1E9FFF;
+				margin-right: 10px;
+				font-size: 20px;
+			}
+
+			.title-text {
+				display: flex;
+				align-items: center;
+			}
+
+			.title-actions {
+				display: flex;
+				gap: 10px;
+			}
+
+			/* 表单样式优化 */
+			.layui-form-item {
+				margin-bottom: 20px;
+			}
+
+			.layui-form-label {
+				color: #666;
+				font-weight: 500;
+				padding: 9px 15px;
+				width: 120px;
+			}
+
+			.layui-input,
+			.layui-select,
+			.layui-textarea,
+			.layui-form-select {
+				border-radius: 4px;
+				border-color: #e6e6e6;
+				transition: all 0.2s;
+			}
+
+			.layui-input:focus,
+			.layui-select:focus,
+			.layui-textarea:focus {
+				border-color: #1E9FFF;
+				box-shadow: 0 0 0 2px rgba(30, 159, 255, 0.2);
+			}
+
+			.layui-form-select dl {
+				border-radius: 4px;
+				box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+			}
+
+			.layui-form-switch {
+				margin-top: 4px;
+			}
+
+			.layui-form-switch em {
+				width: 40px;
+			}
+
+			.layui-form-switch i {
+				left: 2px;
+				width: 14px;
+				height: 14px;
+			}
+
+			.layui-form-onswitch {
+				background-color: #1E9FFF;
+				border-color: #1E9FFF;
+			}
+
+			.layui-form-onswitch i {
+				left: 24px;
+			}
+
+			/* 按钮样式优化 */
+			.layui-btn {
+				border-radius: 4px;
+				padding: 0 18px;
+				height: 36px;
+				line-height: 36px;
+				transition: all 0.2s;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.layui-btn i {
+				margin-right: 6px;
+			}
+
+			.layui-btn-primary:hover {
+				border-color: #1E9FFF;
+				color: #1E9FFF;
+			}
+
+			.layui-btn-normal {
+				background-color: #1E9FFF;
+			}
+
+			.layui-btn-normal:hover {
+				background-color: #0A6EFF;
+			}
+
+			.layui-btn-danger:hover {
+				background-color: #e53e3e;
+			}
+
+			.btn-group {
+				display: flex;
+				gap: 10px;
+				justify-content: flex-end;
+				margin-top: 30px;
+				padding-top: 15px;
+				border-top: 1px solid #f2f2f2;
+			}
+
+			/* 规则列表样式 */
+			.rules-list-container {
+				margin-top: 30px;
+			}
+
+			.table-actions {
+				display: flex;
+				gap: 8px;
+			}
+
+			.table-action-btn {
+				color: #1E9FFF;
+				cursor: pointer;
+				font-size: 14px;
+				transition: color 0.2s;
+				display: inline-flex;
+				align-items: center;
+			}
+
+			.table-action-btn i {
+				margin-right: 4px;
+			}
+
+			.table-action-btn:hover {
+				color: #0A6EFF;
+			}
+
+			.table-action-btn.danger {
+				color: #F5222D;
+			}
+
+			.table-action-btn.danger:hover {
+				color: #e53e3e;
+			}
+
+			.layui-table {
+				border-radius: 8px;
+				overflow: hidden;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+			}
+
+			.layui-table th {
+				background-color: #f7fafc;
+				color: #666;
+				font-weight: 500;
+			}
+
+			.layui-table tr:hover {
+				background-color: #f7fafc;
+			}
+
+			.layui-table td,
+			.layui-table th {
+				padding: 12px 15px;
+			}
+
+			/* 状态标签样式 */
+			.status-tag {
+				display: inline-block;
+				padding: 2px 8px;
+				border-radius: 4px;
+				font-size: 12px;
+				font-weight: 500;
+			}
+
+			.status-enabled {
+				background-color: #f6ffed;
+				color: #52C41A;
+				border: 1px solid #e1f3d8;
+			}
+
+			.status-disabled {
+				background-color: #fff2f0;
+				color: #F5222D;
+				border: 1px solid #ffe3e3;
+			}
+
+			/* 提示信息样式 */
+			.form-hint {
+				color: #888;
+				font-size: 12px;
+				margin-top: 5px;
+				margin-left: 135px;
+				line-height: 1.5;
+			}
+
+			.form-hint i {
+				margin-right: 4px;
+			}
+
+			/* 字段规则列表样式 */
+			.field-rules-list {
+				border: 1px solid #e6e6e6;
+				border-radius: 4px;
+				margin-top: 10px;
+			}
+
+			.field-rule-item {
+				padding: 15px;
+				border-bottom: 1px solid #f2f2f2;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			.field-rule-item:last-child {
+				border-bottom: none;
+			}
+
+			.field-rule-info {
+				flex: 1;
+			}
+
+			.field-rule-name {
+				font-weight: 500;
+				margin-bottom: 5px;
+				display: flex;
+				align-items: center;
+			}
+
+			.field-rule-name i {
+				color: #1E9FFF;
+				margin-right: 6px;
+				font-size: 14px;
+			}
+
+			.field-rule-selector {
+				font-size: 13px;
+				color: #666;
+				background-color: #f7fafc;
+				padding: 3px 8px;
+				border-radius: 3px;
+				display: inline-block;
+				max-width: 500px;
+				word-break: break-all;
+			}
+
+			.field-rule-actions {
+				display: flex;
+				gap: 10px;
+			}
+
+			/* 空状态样式 */
+			.empty-state {
+				text-align: center;
+				padding: 40px 0;
+				color: #888;
+			}
+
+			.empty-state i {
+				font-size: 48px;
+				margin-bottom: 15px;
+				color: #ddd;
+			}
+
+			.empty-state p {
+				margin-bottom: 20px;
+			}
+
+			/* 响应式优化 */
+			@media screen and (max-width: 768px) {
+				.layui-form-label {
+					width: 100px;
+				}
+
+				.form-hint {
+					margin-left: 115px;
+				}
+
+				.btn-group {
+					flex-wrap: wrap;
+				}
+
+				.layui-btn {
+					flex: 1;
+					min-width: 100px;
+				}
+
+				.field-rule-item {
+					flex-direction: column;
+					align-items: flex-start;
+				}
+
+				.field-rule-actions {
+					margin-top: 10px;
+					align-self: flex-end;
+				}
+
+				.field-rule-selector {
+					max-width: 100%;
+				}
+			}
+		</style>
+	</head>
+	<body class="layui-layout-body">
+		<div class="layui-layout layui-layout-admin">
+			<!-- 顶部导航 -->
+			<div class="layui-header">
+				<div class="layui-logo">网页采集系统</div>
+				<ul class="layui-nav layui-layout-left">
+					<li class="layui-nav-item layui-nav-itemed"><a href="index.html">首页</a></li>
+					<li class="layui-nav-item"><a href="task-config.html">任务配置</a></li>
+					<li class="layui-nav-item"><a href="crawl-rules.html">采集规则</a></li>
+					<li class="layui-nav-item"><a href="task-management.html">任务管理</a></li>
+					<li class="layui-nav-item"><a href="data-preview.html">数据预览</a></li>
+					<li class="layui-nav-item"><a href="data-export.html">数据导出</a></li>
+					<li class="layui-nav-item"><a href="system-settings.html">系统设置</a></li>
+					<li class="layui-nav-item"><a href="log-view.html">日志查看</a></li>
+				</ul>
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<img src="lib/layui-v2.6.3/images/face.jpg" class="layui-nav-img"
+								style="border-radius: 50%;">
+							管理员
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="javascript:;">个人中心</a></dd>
+							<dd><a href="javascript:;">修改密码</a></dd>
+							<dd><a href="login.html">退出登录</a></dd>
+						</dl>
+					</li>
+				</ul>
+			</div>
+
+			<!-- 侧边栏 -->
+			<div class="layui-side">
+				<div class="layui-side-scroll">
+					<ul class="layui-nav layui-nav-tree" lay-filter="sideNav">
+						<li class="layui-nav-item layui-nav-itemed">
+							<a href="index.html"><i class="fa fa-home"></i> 系统首页</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="task-config.html"><i class="fa fa-cog"></i> 任务配置</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="crawl-rules.html"><i class="fa fa-filter"></i> 采集规则</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="task-management.html"><i class="fa fa-tasks"></i> 任务管理</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="data-preview.html"><i class="fa fa-table"></i> 数据预览</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="data-export.html"><i class="fa fa-download"></i> 数据导出</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="system-settings.html"><i class="fa fa-sliders"></i> 系统设置</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="log-view.html"><i class="fa fa-history"></i> 日志查看</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- 主内容区 -->
+			<div class="layui-body">
+				<!-- 采集规则表单卡片 -->
+			 <div class="card-container">
+					<div class="card-title">
+						<div class="title-text">
+							<i class="layui-icon layui-icon-filter"></i>
+							采集规则配置
+						</div>
+					</div>
+					<form class="layui-form" lay-filter="ruleForm" id="ruleForm">
+						<div class="layui-form-item">
+							<label class="layui-form-label">规则名称 <span style="color: #F5222D;">*</span></label>
+							<div class="layui-input-block">
+								<input type="text" name="ruleName" lay-verify="required" placeholder="请输入采集规则名称"
+									autocomplete="off" class="layui-input">
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								请输入具有辨识度的规则名称，如"新闻文章采集规则"
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">规则类型</label>
+							<div class="layui-input-block">
+								<select name="ruleType" lay-verify="required">
+									<option value="general">通用网页内容</option>
+									<option value="news">新闻文章</option>
+									<option value="ecommerce">电商产品</option>
+									<option value="social">社交媒体</option>
+									<option value="forum">论坛帖子</option>
+									<option value="custom">自定义</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">页面编码</label>
+							<div class="layui-input-block">
+								<select name="pageEncoding">
+									<option value="utf-8" selected>UTF-8</option>
+									<option value="gbk">GBK</option>
+									<option value="gb2312">GB2312</option>
+									<option value="big5">BIG5</option>
+								</select>
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								目标网页的编码格式，错误的编码会导致乱码
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">列表容器选择器</label>
+							<div class="layui-input-block">
+								<input type="text" name="listContainer" placeholder="例如: .article-list"
+									autocomplete="off" class="layui-input">
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								CSS选择器，用于定位包含多条记录的容器，留空则视为单页单记录
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">单条记录选择器</label>
+							<div class="layui-input-block">
+								<input type="text" name="itemSelector" placeholder="例如: .article-item"
+									autocomplete="off" class="layui-input">
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								CSS选择器，用于定位单条记录，需配合列表容器选择器使用
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">分页选择器</label>
+							<div class="layui-input-block">
+								<input type="text" name="paginationSelector" placeholder="例如: .next-page"
+									autocomplete="off" class="layui-input">
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								CSS选择器，用于定位"下一页"链接，留空则只采集第一页
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">字段采集规则</label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn layui-btn-normal" id="addFieldRule">
+									<i class="layui-icon layui-icon-add-circle"></i> 添加字段规则
+								</button>
+
+								<div class="field-rules-list" id="fieldRulesList">
+									<!-- 字段规则示例 -->
+									<div class="field-rule-item">
+										<div class="field-rule-info">
+											<div class="field-rule-name">
+												<i class="layui-icon layui-icon-fonts"></i>
+												标题
+											</div>
+											<div class="field-rule-selector">h1.title 或 #article-title</div>
+										</div>
+										<div class="field-rule-actions">
+											<span class="table-action-btn edit-field-rule">
+												<i class="layui-icon layui-icon-edit"></i> 编辑
+											</span>
+											<span class="table-action-btn delete-field-rule danger">
+												<i class="layui-icon layui-icon-delete"></i> 删除
+											</span>
+										</div>
+									</div>
+									<div class="field-rule-item">
+										<div class="field-rule-info">
+											<div class="field-rule-name">
+												<i class="layui-icon layui-icon-paragraph"></i>
+												内容
+											</div>
+											<div class="field-rule-selector">div.content 或 .article-body</div>
+										</div>
+										<div class="field-rule-actions">
+											<span class="table-action-btn edit-field-rule">
+												<i class="layui-icon layui-icon-edit"></i> 编辑
+											</span>
+											<span class="table-action-btn delete-field-rule danger">
+												<i class="layui-icon layui-icon-delete"></i> 删除
+											</span>
+										</div>
+									</div>
+									<div class="field-rule-item">
+										<div class="field-rule-info">
+											<div class="field-rule-name">
+												<i class="layui-icon layui-icon-date"></i>
+												发布时间
+											</div>
+											<div class="field-rule-selector">span.publish-time 或 .post-date</div>
+										</div>
+										<div class="field-rule-actions">
+											<span class="table-action-btn edit-field-rule">
+												<i class="layui-icon layui-icon-edit"></i> 编辑
+											</span>
+											<span class="table-action-btn delete-field-rule danger">
+												<i class="layui-icon layui-icon-delete"></i> 删除
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-hint">
+								<i class="layui-icon layui-icon-info-circle"></i>
+								配置需要采集的字段及对应的CSS选择器，每个字段对应网页中的一个信息项
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">规则描述</label>
+							<div class="layui-input-block">
+								<textarea name="ruleDescription" placeholder="请输入规则描述信息" class="layui-textarea"
+									rows="3"></textarea>
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">规则状态</label>
+							<div class="layui-input-block">
+								<input type="checkbox" name="ruleStatus" lay-skin="switch" lay-text="启用|禁用" checked>
+							</div>
+						</div>
+
+						<div class="btn-group">
+							<button type="reset" class="layui-btn layui-btn-primary">
+								<i class="layui-icon layui-icon-refresh"></i> 重置
+			  		</button>
+			  		<button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveRule">
+								<i class="layui-icon layui-icon-save"></i> 保存规则
+							</button>
+						</div>
+					</form>
+				</div>
+
+				<!-- 已配置规则列表 -->
+				<div class="rules-list-container card-container">
+			  <div class="card-title">
+						<div class="title-text">
+							<i class="layui-icon layui-icon-list"></i>
+							已配置采集规则列表
+						</div>
+						<div class="title-actions">
+							<button class="layui-btn layui-btn-primary" id="refreshRulesList">
+								<i class="layui-icon layui-icon-refresh"></i> 刷新列表
+							</button>
+							<button class="layui-btn layui-btn-normal" id="addNewRule">
+								<i class="layui-icon layui-icon-add-circle"></i> 新增规则
+							</button>
+						</div>
+					</div>
+			 	<table class="layui-table" lay-size="sm" id="rulesTable">
+						<thead>
+							<tr>
+								<th style="width: 60px;">ID</th>
+								<th>规则名称</th>
+								<th>规则类型</th>
+			 				<th>字段数量</th>
+								<th>状态</th>
+								<th>创建时间</th>
+			 				<th>使用次数</th>
+								<th style="width: 160px;">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1</td>
+								<td>通用网页内容采集</td>
+								<td>通用网页内容</td>
+								<td>5</td>
+								<td><span class="status-tag status-enabled">启用</span></td>
+								<td>2024-05-01</td>
+								<td>12</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn edit-rule" data-id="1">
+											<i class="layui-icon layui-icon-edit"></i> 编辑
+										</span>
+										<span class="table-action-btn delete-rule" data-id="1">
+											<i class="layui-icon layui-icon-delete"></i> 删除
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>2</td>
+								<td>新闻文章采集</td>
+								<td>新闻文章</td>
+								<td>8</td>
+								<td><span class="status-tag status-enabled">启用</span></td>
+								<td>2024-05-03</td>
+								<td>8</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn edit-rule" data-id="2">
+											<i class="layui-icon layui-icon-edit"></i> 编辑
+										</span>
+										<span class="table-action-btn delete-rule" data-id="2">
+											<i class="layui-icon layui-icon-delete"></i> 删除
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>3</td>
+								<td>电商产品信息采集</td>
+								<td>电商产品</td>
+								<td>12</td>
+								<td><span class="status-tag status-enabled">启用</span></td>
+								<td>2024-05-05</td>
+								<td>5</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn edit-rule" data-id="3">
+											<i class="layui-icon layui-icon-edit"></i> 编辑
+										</span>
+										<span class="table-action-btn delete-rule" data-id="3">
+											<i class="layui-icon layui-icon-delete"></i> 删除
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+			 				<td>4</td>
+								<td>社交媒体评论采集</td>
+								<td>社交媒体</td>
+								<td>6</td>
+								<td><span class="status-tag status-disabled">禁用</span></td>
+								<td>2024-05-07</td>
+								<td>3</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn edit-rule" data-id="4">
+											<i class="layui-icon layui-icon-edit"></i> 编辑
+										</span>
+										<span class="table-action-btn delete-rule" data-id="4">
+											<i class="layui-icon layui-icon-delete"></i> 删除
+										</span>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<!-- 分页 -->
+					<div class="layui-box layui-laypage layui-laypage-default mt-15" id="rulesPage">
+						<a class="layui-laypage-prev layui-disabled">上一页</a>
+			 		<span class="layui-laypage-curr"><em class="layui-laypage-em"></em><em>1</em></span>
+						<a href="javascript:;">2</a>
+						<a href="javascript:;">3</a>
+						<a class="layui-laypage-next">下一页</a>
+						<span class="layui-laypage-count">共 10 条</span>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<!-- 字段规则编辑弹窗 -->
+		<div class="layui-modal" id="fieldRuleModal" style="display: none;">
+			<div class="layui-modal-title">编辑字段规则</div>
+			<div class="layui-modal-body" style="padding: 20px;">
+				<form class="layui-form" lay-filter="fieldRuleForm">
+					<div class="layui-form-item">
+						<label class="layui-form-label">字段名称 <span style="color: #F5222D;">*</span></label>
+						<div class="layui-input-block">
+							<input type="text" name="fieldName" lay-verify="required" placeholder="例如: 标题、内容"
+								autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">CSS选择器 <span style="color: #F5222D;">*</span></label>
+						<div class="layui-input-block">
+							<input type="text" name="cssSelector" lay-verify="required"
+								placeholder="例如: h1.title 或 .article-content" autocomplete="off" class="layui-input">
+						</div>
+						<div class="form-hint">
+							<i class="layui-icon layui-icon-info-circle"></i>
+							用于定位该字段在网页中的位置，支持ID选择器(#id)、类选择器(.class)等
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">提取方式</label>
+						<div class="layui-input-block">
+							<select name="extractType">
+								<option value="text" selected>文本内容</option>
+								<option value="html">HTML内容</option>
+								<option value="attr">属性值</option>
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item" id="attrNameContainer" style="display: none;">
+						<label class="layui-form-label">属性名称</label>
+						<div class="layui-input-block">
+							<input type="text" name="attrName" placeholder="例如: href、src、title" autocomplete="off"
+								class="layui-input">
+						</div>
+						<div class="form-hint">
+							<i class="layui-icon layui-icon-info-circle"></i>
+							当提取方式为"属性值"时，需要指定属性名称
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">是否必填</label>
+						<div class="layui-input-block">
+							<input type="checkbox" name="isRequired" lay-skin="switch" lay-text="是|否">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="layui-modal-footer">
+				<button type="button" class="layui-btn layui-btn-primary" id="closeFieldRuleModal">取消</button>
+				<button type="button" class="layui-btn layui-btn-normal" id="saveFieldRule">保存</button>
+			</div>
+		</div>
+
+		<script src="lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+		<script src="lib/layui-v2.6.3/layui.js"></script>
+		<script>
+			layui.use(['element', 'layer', 'form', 'laypage'], function() {
+				var element = layui.element;
+				var layer = layui.layer;
+				var form = layui.form;
+				var laypage = layui.laypage;
+				var $ = layui.$;
+
+				// 验证登录状态
+				if (localStorage.getItem('isLogin')) {
+					layer.msg('请先登录', {
+						icon: 2
+					}, function() {
+						window.location.href = 'login.html';
+					});
+				}
+
+				// 表单提交 - 保存规则
+				form.on('submit(saveRule)', function(data) {
+					// 模拟表单提交
+					layer.load(2);
+			 	setTimeout(function() {
+						layer.closeAll('loading');
+			 		layer.msg('采集规则保存成功', {
+							icon: 1
+						}, function() {
+							// 保存成功后刷新规则列表
+							refreshRulesList();
+						});
+					}, 800);
+					return false;
+				});
+
+				// 提取方式选择变化时显示/隐藏属性名称输入框
+				form.on('select(extractType)', function(data) {
+					if (data.value === 'attr') {
+						$('#attrNameContainer').show();
+					} else {
+						$('#attrNameContainer').hide();
+					}
+				});
+
+				// 添加字段规则按钮点击事件
+				$('#addFieldRule').click(function() {
+					// 重置表单
+					form.val('fieldRuleForm', {
+						'fieldName': '',
+						'cssSelector': '',
+						'extractType': 'text',
+						'attrName': '',
+			  	'isRequired': false
+					});
+					$('#attrNameContainer').hide();
+
+					// 显示弹窗
+					$('#fieldRuleModal').css('display', 'block');
+					// 模拟模态框动画
+					setTimeout(function() {
+						$('#fieldRuleModal').addClass('layui-anim layui-anim-up');
+					}, 10);
+				});
+
+				// 关闭字段规则弹窗
+				$('#closeFieldRuleModal').click(function() {
+					$('#fieldRuleModal').removeClass('layui-anim layui-anim-up');
+					setTimeout(function() {
+						$('#fieldRuleModal').css('display', 'none');
+					}, 300);
+				});
+
+				// 保存字段规则
+				$('#saveFieldRule').click(function() {
+					// 获取表单值
+					var fieldData = form.val('fieldRuleForm');
+
+					// 简单验证
+					if (!fieldData.fieldName || !fieldData.cssSelector) {
+						layer.msg('字段名称和CSS选择器为必填项', {
+							icon: 2
+						});
+						return;
+					}
+
+					// 模拟保存
+					layer.load(2);
+					setTimeout(function() {
+						layer.closeAll('loading');
+
+						// 关闭弹窗
+						$('#fieldRuleModal').removeClass('layui-anim layui-anim-up');
+						setTimeout(function() {
+							$('#fieldRuleModal').css('display', 'none');
+
+							// 添加新的字段规则到列表
+							var fieldIcon = getFieldIcon(fieldData.fieldName);
+							var newFieldRule = $(`
+			                            <div class="field-rule-item">
+			                                <div class="field-rule-info">
+			                                    <div class="field-rule-name">
+			                                        <i class="layui-icon ${fieldIcon}"></i>
+			                                        ${fieldData.fieldName}
+			                                    </div>
+			                                    <div class="field-rule-selector">${fieldData.cssSelector}</div>
+			                                </div>
+			                                <div class="field-rule-actions">
+			                                    <span class="table-action-btn edit-field-rule">
+			                                        <i class="layui-icon layui-icon-edit"></i> 编辑
+			                                    </span>
+			                                    <span class="table-action-btn delete-field-rule danger">
+			                                        <i class="layui-icon layui-icon-delete"></i> 删除
+			                                    </span>
+			                                </div>
+			                            </div>
+			                        `);
+							$('#fieldRulesList').append(newFieldRule);
+
+							// 绑定新添加项的事件
+							bindFieldRuleEvents();
+
+							layer.msg('字段规则添加成功', {
+								icon: 1
+							});
+						}, 300);
+					}, 500);
+				});
+
+				// 根据字段名称获取对应的图标
+				function getFieldIcon(fieldName) {
+					fieldName = fieldName.toLowerCase();
+					if (fieldName.includes('标题')) return 'layui-icon-fonts';
+					if (fieldName.includes('内容') || fieldName.includes('正文')) return 'layui-icon-paragraph';
+					if (fieldName.includes('时间') || fieldName.includes('日期')) return 'layui-icon-date';
+			 	if (fieldName.includes('作者')) return 'layui-icon-user';
+					if (fieldName.includes('图片') || fieldName.includes('图像')) return 'layui-icon-picture';
+					if (fieldName.includes('链接') || fieldName.includes('url')) return 'layui-icon-link';
+					if (fieldName.includes('价格') || fieldName.includes('金额')) return 'layui-icon-rmb';
+					return 'layui-icon-form'; // 默认图标
+				}
+
+				// 编辑规则
+				$(document).on('click', '.edit-rule', function() {
+					var ruleId = $(this).data('id');
+					var ruleName = $(this).closest('tr').find('td:eq(1)').text();
+
+					// 模拟加载规则数据
+					layer.load(2);
+					setTimeout(function() {
+						layer.closeAll('loading');
+						layer.msg('正在编辑规则：' + ruleName, {
+							icon: 0
+						});
+
+						// 这里可以添加填充表单数据的逻辑
+						// 例如：$('#ruleForm [name="ruleName"]').val(ruleName);
+					}, 500);
+				});
+
+				// 删除规则
+				$(document).on('click', '.delete-rule', function() {
+					var ruleId = $(this).data('id');
+					var ruleName = $(this).closest('tr').find('td:eq(1)').text();
+
+					layer.confirm('确定要删除规则【' + ruleName + '】吗？此操作不可恢复', {
+						icon: 3,
+						title: '警告'
+					}, function(index) {
+						layer.close(index);
+
+						// 模拟删除操作
+						layer.load(2);
+						setTimeout(function() {
+							layer.closeAll('loading');
+							layer.msg('规则【' + ruleName + '】已删除', {
+								icon: 1
+							});
+							// 从表格中移除该规则行
+							$('.edit-rule[data-id="' + ruleId + '"]').closest('tr').remove();
+						}, 800);
+					});
+				});
+
+			 // 新增规则按钮点击事件
+				$('#addNewRule').click(function() {
+					// 重置表单
+					$('#ruleForm')[0].reset();
+					// 清空字段规则列表，只保留一个示例
+					$('#fieldRulesList').html(`
+			                    <div class="field-rule-item">
+			                        <div class="field-rule-info">
+			                            <div class="field-rule-name">
+			                                <i class="layui-icon layui-icon-fonts"></i>
+			                                标题
+			                            </div>
+			                            <div class="field-rule-selector">h1.title 或 #article-title</div>
+			                        </div>
+			                        <div class="field-rule-actions">
+			                            <span class="table-action-btn edit-field-rule">
+			                                <i class="layui-icon layui-icon-edit"></i> 编辑
+			                            </span>
+			                            <span class="table-action-btn delete-field-rule danger">
+			                                <i class="layui-icon layui-icon-delete"></i> 删除
+			                            </span>
+			                        </div>
+			                    </div>
+			                `);
+					bindFieldRuleEvents();
+
+					// 滚动到表单顶部
+			 	$('html, body').animate({
+						scrollTop: $('.card-container:first').offset().top - 20
+					}, 500);
+				});
+
+				// 分页渲染
+				laypage.render({
+					elem: 'rulesPage',
+					count: 10,
+					limit: 4,
+					curr: 1,
+					layout: ['prev', 'page', 'next', 'count'],
+					jump: function(obj, first) {
+						if (!first) {
+							layer.msg('切换到第' + obj.curr + '页', {
+								icon: 0
+							});
+						}
+					}
+				});
+
+				// 刷新规则列表按钮点击事件
+				$('#refreshRulesList').click(function() {
+					refreshRulesList();
+				});
+
+				// 刷新规则列表函数
+				function refreshRulesList() {
+					// 获取表格元素
+					var $table = $('#rulesTable');
+					var $tbody = $table.find('tbody');
+
+					// 显示加载动画
+			  layer.load(2);
+
+					// 模拟数据加载延迟
+					setTimeout(function() {
+						// 保存当前滚动位置
+						var scrollTop = $(window).scrollTop();
+
+						// 清空表格内容，显示加载中提示
+						$tbody.html(
+							'<tr><td colspan="8" style="text-align: center; padding: 30px;"><i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i> 正在加载规则数据...</td></tr>'
+							);
+
+						// 模拟数据加载
+						setTimeout(function() {
+							// 恢复表格内容
+							$tbody.html(`
+			                            <tr>
+			                                <td>1</td>
+			                                <td>通用网页内容采集</td>
+			                                <td>通用网页内容</td>
+			                                <td>5</td>
+			                                <td><span class="status-tag status-enabled">启用</span></td>
+			                                <td>2024-05-01</td>
+			                                <td>12</td>
+			                                <td>
+			                                    <div class="table-actions">
+			                                        <span class="table-action-btn edit-rule" data-id="1">
+			                                            <i class="layui-icon layui-icon-edit"></i> 编辑
+			                                        </span>
+			                                        <span class="table-action-btn delete-rule" data-id="1">
+			                                            <i class="layui-icon layui-icon-delete"></i> 删除
+			                                        </span>
+			                                    </div>
+			                                </td>
+			                            </tr>
+			                            <tr>
+			                                <td>2</td>
+			                                <td>新闻文章采集</td>
+			                                <td>新闻文章</td>
+			                                <td>8</td>
+			                                <td><span class="status-tag status-enabled">启用</span></td>
+			                                <td>2024-05-03</td>
+			                                <td>8</td>
+			                                <td>
+			                                    <div class="table-actions">
+			                                        <span class="table-action-btn edit-rule" data-id="2">
+			                                            <i class="layui-icon layui-icon-edit"></i> 编辑
+			                                        </span>
+			                                        <span class="table-action-btn delete-rule" data-id="2">
+			                                            <i class="layui-icon layui-icon-delete"></i> 删除
+			                                        </span>
+			                                    </div>
+			                                </td>
+			                            </tr>
+			                            <tr>
+			                                <td>3</td>
+			                                <td>电商产品信息采集</td>
+			                                <td>电商产品</td>
+			                                <td>12</td>
+			                                <td><span class="status-tag status-enabled">启用</span></td>
+			                                <td>2024-05-05</td>
+			                                <td>5</td>
+			                                <td>
+			                                    <div class="table-actions">
+			                                        <span class="table-action-btn edit-rule" data-id="3">
+			                                            <i class="layui-icon layui-icon-edit"></i> 编辑
+			                                        </span>
+			                                        <span class="table-action-btn delete-rule" data-id="3">
+			                                            <i class="layui-icon layui-icon-delete"></i> 删除
+			                                        </span>
+			                                    </div>
+			                                </td>
+			                            </tr>
+			                            <tr>
+			                                <td>4</td>
+			                                <td>社交媒体评论采集</td>
+			                                <td>社交媒体</td>
+			                                <td>6</td>
+			                                <td><span class="status-tag status-disabled">禁用</span></td>
+			                                <td>2024-05-07</td>
+			                                <td>3</td>
+			                                <td>
+			                                    <div class="table-actions">
+			                                        <span class="table-action-btn edit-rule" data-id="4">
+			                                            <i class="layui-icon layui-icon-edit"></i> 编辑
+			                                        </span>
+			                                        <span class="table-action-btn delete-rule" data-id="4">
+			                                            <i class="layui-icon layui-icon-delete"></i> 删除
+			                                        </span>
+			                                    </div>
+			                                </td>
+			                            </tr>
+			                        `);
+
+							// 恢复滚动位置
+							$(window).scrollTop(scrollTop);
+
+							// 关闭加载动画
+							layer.closeAll('loading');
+
+							// 显示刷新成功提示
+							layer.msg('规则列表已更新', {
+								icon: 1,
+								time: 1500
+							});
+						}, 800);
+					}, 500);
+				}
+
+				// 绑定字段规则相关事件
+				function bindFieldRuleEvents() {
+					// 编辑字段规则
+					$('.edit-field-rule').off('click').click(function() {
+						var $item = $(this).closest('.field-rule-item');
+						var fieldName = $item.find('.field-rule-name').text().trim();
+						var cssSelector = $item.find('.field-rule-selector').text().trim();
+
+						// 填充表单
+						form.val('fieldRuleForm', {
+							'fieldName': fieldName,
+							'cssSelector': cssSelector,
+							'extractType': 'text',
+							'attrName': '',
+							'isRequired': false
+						});
+						$('#attrNameContainer').hide();
+
+						// 显示弹窗
+						$('#fieldRuleModal').css('display', 'block');
+						setTimeout(function() {
+							$('#fieldRuleModal').addClass('layui-anim layui-anim-up');
+						}, 10);
+					});
+
+					// 删除字段规则
+					$('.delete-field-rule').off('click').click(function() {
+						var $item = $(this).closest('.field-rule-item');
+						var fieldName = $item.find('.field-rule-name').text().trim();
+
+						layer.confirm('确定要删除字段规则【' + fieldName + '】吗？', {
+							icon: 3,
+							title: '提示'
+						}, function(index) {
+							layer.close(index);
+							$item.remove();
+							layer.msg('字段规则已删除', {
+								icon: 1
+							});
+						});
+					});
+			}
+	
+				// 初始绑定字段规则事件
+				bindFieldRuleEvents();
+
+				// 表单输入提示效果
+				$('.layui-input, .layui-textarea').focus(function() {
+					$(this).closest('.layui-form-item').addClass('layui-form-item-focus');
+				}).blur(function() {
+					$(this).closest('.layui-form-item').removeClass('layui-form-item-focus');
+				});
+			});
+		</script>
+	</body>
+</html>

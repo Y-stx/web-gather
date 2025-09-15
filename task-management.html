@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>网页采集系统 - 任务管理</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="lib/layui-v2.6.3/css/layui.css">
+		<link rel="stylesheet" href="css/common.css">
+		<style>
+			/* 全局样式优化 */
+			body {
+				background-color: #f5f7fa;
+				font-family: "Microsoft YaHei", "Roboto", sans-serif;
+			}
+
+			.layui-layout-admin .layui-header {
+				background: linear-gradient(135deg, #1E9FFF 0%, #0A6EFF 100%);
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+			}
+
+			.layui-logo {
+				background: rgba(255, 255, 255, 0.15) !important;
+				border-radius: 0 4px 4px 0;
+				font-size: 18px;
+				letter-spacing: 1px;
+			}
+
+			.layui-nav-tree .layui-nav-itemed>a {
+				background-color: #e6f7ff !important;
+				color: #1E9FFF !important;
+				border-left: 3px solid #1E9FFF;
+			}
+
+			.layui-body {
+				background-color: #f5f7fa;
+				padding: 20px;
+			}
+
+			/* 卡片容器样式 */
+			.card-container {
+				background: #fff;
+				border-radius: 8px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+				padding: 25px;
+				margin-bottom: 20px;
+			}
+
+			.card-title {
+				font-size: 18px;
+				font-weight: 500;
+				color: #333;
+				margin-bottom: 20px;
+				padding-bottom: 15px;
+				border-bottom: 1px solid #f2f2f2;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			.card-title i {
+				color: #1E9FFF;
+				margin-right: 10px;
+				font-size: 20px;
+			}
+
+			.title-text {
+				display: flex;
+				align-items: center;
+			}
+
+			.title-actions {
+				display: flex;
+				gap: 10px;
+			}
+
+			/* 按钮样式优化 */
+			.layui-btn {
+				border-radius: 4px;
+				padding: 0 18px;
+				height: 36px;
+				line-height: 36px;
+				transition: all 0.2s;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.layui-btn i {
+				margin-right: 6px;
+			}
+
+			.layui-btn-primary:hover {
+				border-color: #1E9FFF;
+				color: #1E9FFF;
+			}
+
+			.layui-btn-normal {
+				background-color: #1E9FFF;
+			}
+
+			.layui-btn-normal:hover {
+				background-color: #0A6EFF;
+			}
+
+			.layui-btn-danger:hover {
+				background-color: #e53e3e;
+			}
+
+			.layui-btn-success {
+				background-color: #52C41A;
+			}
+
+			.layui-btn-success:hover {
+				background-color: #4CAF50;
+			}
+
+			.layui-btn-warning {
+				background-color: #FAAD14;
+			}
+
+			.layui-btn-warning:hover {
+				background-color: #F5A623;
+			}
+
+			/* 任务列表样式 */
+			.tasks-list-container {
+				margin-top: 0;
+			}
+
+			.table-actions {
+				display: flex;
+				gap: 8px;
+			}
+
+			.table-action-btn {
+				color: #1E9FFF;
+				cursor: pointer;
+				font-size: 14px;
+				transition: color 0.2s;
+				display: inline-flex;
+				align-items: center;
+			}
+
+			.table-action-btn i {
+				margin-right: 4px;
+			}
+
+			.table-action-btn:hover {
+				color: #0A6EFF;
+			}
+
+			.table-action-btn.danger {
+				color: #F5222D;
+			}
+
+			.table-action-btn.danger:hover {
+				color: #e53e3e;
+			}
+
+			.table-action-btn.success {
+				color: #52C41A;
+			}
+
+			.table-action-btn.success:hover {
+				color: #4CAF50;
+			}
+
+			.table-action-btn.warning {
+				color: #FAAD14;
+			}
+
+			.table-action-btn.warning:hover {
+				color: #F5A623;
+			}
+
+			.layui-table {
+				border-radius: 8px;
+				overflow: hidden;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+			}
+
+			.layui-table th {
+				background-color: #f7fafc;
+				color: #666;
+				font-weight: 500;
+			}
+
+			.layui-table tr:hover {
+				background-color: #f7fafc;
+			}
+
+			.layui-table td,
+			.layui-table th {
+				padding: 12px 15px;
+			}
+
+			/* 状态标签样式 */
+			.status-tag {
+				display: inline-block;
+				padding: 2px 8px;
+				border-radius: 4px;
+				font-size: 12px;
+				font-weight: 500;
+			}
+
+			.status-running {
+				background-color: #e6f7ff;
+				color: #1890ff;
+				border: 1px solid #bae7ff;
+			}
+
+			.status-paused {
+				background-color: #fff7e6;
+				color: #faad14;
+				border: 1px solid #ffe8cc;
+			}
+
+			.status-completed {
+				background-color: #f6ffed;
+				color: #52C41A;
+				border: 1px solid #e1f3d8;
+			}
+
+			.status-failed {
+				background-color: #fff2f0;
+				color: #F5222D;
+				border: 1px solid #ffe3e3;
+			}
+
+			.status-waiting {
+				background-color: #f0f2f5;
+				color: #8c8c8c;
+				border: 1px solid #e5e6eb;
+			}
+
+			/* 搜索和筛选区域 */
+			.search-filter-bar {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 15px;
+				margin-bottom: 20px;
+				align-items: center;
+			}
+
+			.search-box {
+				flex: 1;
+				min-width: 250px;
+				position: relative;
+			}
+
+			.search-box .layui-input {
+				padding-left: 38px;
+			}
+
+			.search-box i {
+				position: absolute;
+				left: 12px;
+				top: 50%;
+				transform: translateY(-50%);
+				color: #999;
+			}
+
+			.filter-group {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 15px;
+				align-items: center;
+			}
+
+			.layui-form-select {
+				min-width: 150px;
+			}
+
+			/* 进度条样式 */
+			.progress-container {
+				width: 100%;
+				height: 8px;
+				background-color: #f0f2f5;
+				border-radius: 4px;
+				overflow: hidden;
+			}
+
+			.progress-bar {
+				height: 100%;
+				border-radius: 4px;
+				transition: width 0.3s ease;
+			}
+
+			.progress-running {
+				background-color: #1E9FFF;
+			}
+
+			.progress-completed {
+				background-color: #52C41A;
+			}
+
+			.progress-failed {
+				background-color: #F5222D;
+			}
+
+			.progress-paused {
+				background-color: #FAAD14;
+			}
+
+			.progress-text {
+				font-size: 12px;
+				color: #666;
+				margin-top: 4px;
+				text-align: right;
+			}
+
+			/* 空状态样式 */
+			.empty-state {
+				text-align: center;
+				padding: 60px 0;
+				color: #888;
+			}
+
+			.empty-state i {
+				font-size: 64px;
+				margin-bottom: 20px;
+				color: #ddd;
+			}
+
+			.empty-state p {
+				margin-bottom: 20px;
+				font-size: 16px;
+			}
+
+			/* 统计卡片样式 */
+			.stats-container {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 20px;
+				margin-bottom: 20px;
+			}
+
+			.stat-card {
+				flex: 1;
+				min-width: 200px;
+				background: #fff;
+				border-radius: 8px;
+				padding: 20px;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+				transition: transform 0.2s, box-shadow 0.2s;
+			}
+
+			.stat-card:hover {
+				transform: translateY(-3px);
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			}
+
+			.stat-title {
+				color: #666;
+				font-size: 14px;
+				margin-bottom: 10px;
+				display: flex;
+				align-items: center;
+			}
+
+			.stat-title i {
+				margin-right: 8px;
+				font-size: 16px;
+			}
+
+			.stat-value {
+				font-size: 24px;
+				font-weight: 500;
+				color: #333;
+				margin-bottom: 5px;
+			}
+
+			.stat-change {
+				font-size: 12px;
+				display: flex;
+				align-items: center;
+			}
+
+			.stat-increase {
+				color: #F5222D;
+			}
+
+			.stat-decrease {
+				color: #52C41A;
+			}
+
+			.stat-card-running {
+				border-left: 4px solid #1E9FFF;
+			}
+
+			.stat-card-completed {
+				border-left: 4px solid #52C41A;
+			}
+
+			.stat-card-failed {
+				border-left: 4px solid #F5222D;
+			}
+
+			.stat-card-total {
+				border-left: 4px solid #FAAD14;
+			}
+
+			/* 响应式优化 */
+			@media screen and (max-width: 768px) {
+				.stats-container {
+					flex-direction: column;
+				}
+
+				.stat-card {
+					width: 100%;
+				}
+
+				.search-filter-bar {
+					flex-direction: column;
+					align-items: stretch;
+				}
+
+				.filter-group {
+					width: 100%;
+				}
+
+				.table-actions {
+					flex-wrap: wrap;
+				}
+
+				.table-action-btn {
+					margin-bottom: 5px;
+				}
+			}
+		</style>
+	</head>
+	<body class="layui-layout-body">
+		<div class="layui-layout layui-layout-admin">
+			<!-- 顶部导航 -->
+			<div class="layui-header">
+				<div class="layui-logo">网页采集系统</div>
+				<ul class="layui-nav layui-layout-left">
+					<li class="layui-nav-item"><a href="index.html">首页</a></li>
+					<li class="layui-nav-item"><a href="task-config.html">任务配置</a></li>
+					<li class="layui-nav-item"><a href="crawl-rules.html">采集规则</a></li>
+					<li class="layui-nav-item layui-nav-itemed"><a href="task-management.html">任务管理</a></li>
+					<li class="layui-nav-item"><a href="data-preview.html">数据预览</a></li>
+					<li class="layui-nav-item"><a href="data-export.html">数据导出</a></li>
+					<li class="layui-nav-item"><a href="system-settings.html">系统设置</a></li>
+					<li class="layui-nav-item"><a href="log-view.html">日志查看</a></li>
+				</ul>
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<img src="lib/layui-v2.6.3/images/face.jpg" class="layui-nav-img"
+								style="border-radius: 50%;">
+							管理员
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="javascript:;">个人中心</a></dd>
+							<dd><a href="javascript:;">修改密码</a></dd>
+							<dd><a href="login.html">退出登录</a></dd>
+						</dl>
+					</li>
+				</ul>
+			</div>
+
+			<!-- 侧边栏 -->
+			<div class="layui-side">
+				<div class="layui-side-scroll">
+					<ul class="layui-nav layui-nav-tree" lay-filter="sideNav">
+						<li class="layui-nav-item">
+							<a href="index.html"><i class="fa fa-home"></i> 系统首页</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="task-config.html"><i class="fa fa-cog"></i> 任务配置</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="crawl-rules.html"><i class="fa fa-filter"></i> 采集规则</a>
+						</li>
+						<li class="layui-nav-item layui-nav-itemed">
+							<a href="task-management.html"><i class="fa fa-tasks"></i> 任务管理</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="data-preview.html"><i class="fa fa-table"></i> 数据预览</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="data-export.html"><i class="fa fa-download"></i> 数据导出</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="system-settings.html"><i class="fa fa-sliders"></i> 系统设置</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="log-view.html"><i class="fa fa-history"></i> 日志查看</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- 主内容区 -->
+			<div class="layui-body">
+				<!-- 统计卡片 -->
+				<div class="stats-container">
+					<div class="stat-card stat-card-total">
+						<div class="stat-title">
+							<i class="layui-icon layui-icon-total"></i>
+							总任务数
+						</div>
+						<div class="stat-value">12</div>
+						<div class="stat-change stat-increase">
+							<i class="layui-icon layui-icon-up"></i>
+							较昨日 +2
+						</div>
+					</div>
+					<div class="stat-card stat-card-running">
+						<div class="stat-title">
+							<i class="layui-icon layui-icon-loading"></i>
+							运行中任务
+						</div>
+						<div class="stat-value">3</div>
+						<div class="stat-change stat-decrease">
+							<i class="layui-icon layui-icon-down"></i>
+							较昨日 -1
+						</div>
+					</div>
+					<div class="stat-card stat-card-completed">
+						<div class="stat-title">
+							<i class="layui-icon layui-icon-ok"></i>
+							已完成任务
+						</div>
+						<div class="stat-value">7</div>
+						<div class="stat-change stat-increase">
+							<i class="layui-icon layui-icon-up"></i>
+							较昨日 +3
+						</div>
+					</div>
+					<div class="stat-card stat-card-failed">
+						<div class="stat-title">
+							<i class="layui-icon layui-icon-close"></i>
+							失败任务
+						</div>
+						<div class="stat-value">2</div>
+						<div class="stat-change stat-decrease">
+							<i class="layui-icon layui-icon-down"></i>
+							较昨日 0
+						</div>
+					</div>
+				</div>
+
+				<!-- 任务列表卡片 -->
+				<div class="card-container tasks-list-container">
+					<div class="card-title">
+						<div class="title-text">
+							<i class="layui-icon layui-icon-tasks"></i>
+							任务管理
+						</div>
+						<div class="title-actions">
+							<button class="layui-btn layui-btn-primary" id="refreshTasksList">
+								<i class="layui-icon layui-icon-refresh"></i> 刷新列表
+							</button>
+							<button class="layui-btn layui-btn-normal" id="batchOperateBtn">
+								<i class="layui-icon layui-icon-group"></i> 批量操作
+							</button>
+							<button class="layui-btn layui-btn-success" id="addNewTaskBtn">
+								<i class="layui-icon layui-icon-add-circle"></i> 新建任务
+							</button>
+						</div>
+					</div>
+
+					<!-- 搜索和筛选 -->
+					<div class="search-filter-bar">
+						<div class="search-box">
+							<i class="layui-icon layui-icon-search"></i>
+							<input type="text" placeholder="搜索任务名称、URL..." class="layui-input" id="taskSearchInput">
+						</div>
+						<div class="filter-group">
+							<select name="statusFilter" lay-filter="statusFilter" class="layui-form-select">
+								<option value="">全部状态</option>
+								<option value="running">运行中</option>
+								<option value="paused">已暂停</option>
+								<option value="completed">已完成</option>
+								<option value="failed">已失败</option>
+								<option value="waiting">等待中</option>
+							</select>
+							<select name="ruleFilter" lay-filter="ruleFilter" class="layui-form-select">
+								<option value="">全部规则</option>
+								<option value="1">通用网页内容采集</option>
+								<option value="2">新闻文章采集</option>
+								<option value="3">电商产品信息采集</option>
+								<option value="4">社交媒体评论采集</option>
+							</select>
+							<button class="layui-btn layui-btn-primary" id="resetFilters">
+								<i class="layui-icon layui-icon-refresh"></i> 重置
+							</button>
+						</div>
+					</div>
+
+					<!-- 任务列表 -->
+					<table class="layui-table" lay-size="sm" id="tasksTable">
+						<thead>
+							<tr>
+								<th style="width: 40px;">
+									<input type="checkbox" lay-skin="primary" id="checkAll">
+								</th>
+								<th style="width: 60px;">ID</th>
+								<th>任务名称</th>
+								<th>目标URL</th>
+								<th>采集规则</th>
+								<th>状态</th>
+								<th>进度</th>
+								<th>开始时间</th>
+								<th>预计完成</th>
+								<th style="width: 180px;">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><input type="checkbox" lay-skin="primary" data-id="1"></td>
+								<td>1</td>
+								<td>新闻网站采集</td>
+								<td>https://news.example.com</td>
+								<td>新闻文章采集</td>
+								<td><span class="status-tag status-running">运行中</span></td>
+								<td>
+									<div class="progress-container">
+										<div class="progress-bar progress-running" style="width: 65%;"></div>
+									</div>
+									<div class="progress-text">65%</div>
+								</td>
+								<td>2024-05-10 08:30</td>
+								<td>2024-05-10 10:00</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn warning pause-task" data-id="1">
+											<i class="layui-icon layui-icon-pause"></i> 暂停
+										</span>
+										<span class="table-action-btn danger stop-task" data-id="1">
+											<i class="layui-icon layui-icon-stop"></i> 停止
+										</span>
+										<span class="table-action-btn view-task" data-id="1">
+											<i class="layui-icon layui-icon-eye"></i> 查看
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td><input type="checkbox" lay-skin="primary" data-id="2"></td>
+								<td>2</td>
+								<td>电商价格监控</td>
+								<td>https://mall.example.com</td>
+								<td>电商产品信息采集</td>
+								<td><span class="status-tag status-running">运行中</span></td>
+								<td>
+									<div class="progress-container">
+										<div class="progress-bar progress-running" style="width: 32%;"></div>
+									</div>
+									<div class="progress-text">32%</div>
+								</td>
+								<td>2024-05-10 09:15</td>
+								<td>2024-05-10 11:45</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn warning pause-task" data-id="2">
+											<i class="layui-icon layui-icon-pause"></i> 暂停
+										</span>
+										<span class="table-action-btn danger stop-task" data-id="2">
+											<i class="layui-icon layui-icon-stop"></i> 停止
+										</span>
+										<span class="table-action-btn view-task" data-id="2">
+											<i class="layui-icon layui-icon-eye"></i> 查看
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td><input type="checkbox" lay-skin="primary" data-id="3"></td>
+								<td>3</td>
+								<td>社交媒体评论采集</td>
+								<td>https://social.example.com</td>
+								<td>社交媒体评论采集</td>
+								<td><span class="status-tag status-paused">已暂停</span></td>
+								<td>
+									<div class="progress-container">
+										<div class="progress-bar progress-paused" style="width: 45%;"></div>
+									</div>
+									<div class="progress-text">45%</div>
+								</td>
+								<td>2024-05-10 07:00</td>
+								<td>--</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn success resume-task" data-id="3">
+											<i class="layui-icon layui-icon-play"></i> 继续
+										</span>
+										<span class="table-action-btn danger stop-task" data-id="3">
+											<i class="layui-icon layui-icon-stop"></i> 停止
+										</span>
+										<span class="table-action-btn view-task" data-id="3">
+											<i class="layui-icon layui-icon-eye"></i> 查看
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td><input type="checkbox" lay-skin="primary" data-id="4"></td>
+								<td>4</td>
+								<td>论坛帖子采集</td>
+								<td>https://forum.example.com</td>
+								<td>通用网页内容采集</td>
+								<td><span class="status-tag status-completed">已完成</span></td>
+								<td>
+									<div class="progress-container">
+										<div class="progress-bar progress-completed" style="width: 100%;"></div>
+									</div>
+									<div class="progress-text">100%</div>
+								</td>
+								<td>2024-05-10 06:00</td>
+								<td>2024-05-10 07:30</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn success restart-task" data-id="4">
+											<i class="layui-icon layui-icon-refresh"></i> 重新运行
+										</span>
+										<span class="table-action-btn view-task" data-id="4">
+											<i class="layui-icon layui-icon-eye"></i> 查看
+										</span>
+										<span class="table-action-btn view-data" data-id="4">
+											<i class="layui-icon layui-icon-table"></i> 数据
+										</span>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td><input type="checkbox" lay-skin="primary" data-id="5"></td>
+								<td>5</td>
+								<td>博客文章采集</td>
+								<td>https://blog.example.com</td>
+								<td>新闻文章采集</td>
+								<td><span class="status-tag status-failed">已失败</span></td>
+								<td>
+									<div class="progress-container">
+										<div class="progress-bar progress-failed" style="width: 28%;"></div>
+									</div>
+									<div class="progress-text">28%</div>
+								</td>
+								<td>2024-05-10 05:20</td>
+								<td>--</td>
+								<td>
+									<div class="table-actions">
+										<span class="table-action-btn success restart-task" data-id="5">
+											<i class="layui-icon layui-icon-refresh"></i> 重试
+										</span>
+										<span class="table-action-btn view-task" data-id="5">
+											<i class="layui-icon layui-icon-eye"></i> 查看
+										</span>
+										<span class="table-action-btn view-log" data-id="5">
+											<i class="layui-icon layui-icon-info-circle"></i> 日志
+										</span>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<!-- 分页 -->
+					<div class="layui-box layui-laypage layui-laypage-default mt-15" id="tasksPage">
+						<a class="layui-laypage-prev layui-disabled">上一页</a>
+						<span class="layui-laypage-curr"><em class="layui-laypage-em"></em><em>1</em></span>
+						<a href="javascript:;">2</a>
+						<a href="javascript:;">3</a>
+						<a class="layui-laypage-next">下一页</a>
+						<span class="layui-laypage-count">共 12 条</span>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<!-- 批量操作弹窗 -->
+		<div class="layui-modal" id="batchOperateModal" style="display: none;">
+			<div class="layui-modal-title">批量操作</div>
+			<div class="layui-modal-body" style="padding: 20px;">
+				<div class="layui-form-item">
+					<p style="margin-bottom: 15px; color: #666;">请选择对选中的 <span id="selectedCount">0</span> 个任务执行以下操作：
+					</p>
+					<div class="layui-btn-group" style="width: 100%; display: flex; gap: 10px; flex-wrap: wrap;">
+						<button type="button" class="layui-btn layui-btn-normal" id="batchStartBtn" style="flex: 1;">
+							<i class="layui-icon layui-icon-play"></i> 开始/继续
+						</button>
+						<button type="button" class="layui-btn layui-btn-warning" id="batchPauseBtn" style="flex: 1;">
+							<i class="layui-icon layui-icon-pause"></i> 暂停
+						</button>
+						<button type="button" class="layui-btn layui-btn-danger" id="batchStopBtn" style="flex: 1;">
+							<i class="layui-icon layui-icon-stop"></i> 停止
+						</button>
+						<button type="button" class="layui-btn layui-btn-primary" id="batchDeleteBtn" style="flex: 1;">
+							<i class="layui-icon layui-icon-delete"></i> 删除
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="layui-modal-footer">
+				<button type="button" class="layui-btn layui-btn-primary" id="closeBatchModal">取消</button>
+			</div>
+		</div>
+
+		<script src="lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+		<script src="lib/layui-v2.6.3/layui.js"></script>
+		<script>
+			layui.use(['element', 'layer', 'form', 'laypage'], function() {
+				var element = layui.element;
+				var layer = layui.layer;
+				var form = layui.form;
+				var laypage = layui.laypage;
+				var $ = layui.$;
+
+				// 验证登录状态
+				if (localStorage.getItem('isLogin')) {
+					layer.msg('请先登录', {
+						icon: 2
+					}, function() {
+						window.location.href = 'login.html';
+					});
+				}
+
+				// 全选/取消全选
+				form.on('checkbox(#checkAll)', function(data) {
+					var checked = data.elem.checked;
+					$('input[type="checkbox"][data-id]').prop('checked', checked);
+					form.render('checkbox');
+				});
+
+				// 分页渲染
+				laypage.render({
+					elem: 'tasksPage',
+					count: 12,
+					limit: 5,
+					curr: 1,
+					layout: ['prev', 'page', 'next', 'count'],
+					jump: function(obj, first) {
+						if (!first) {
+							layer.msg('切换到第' + obj.curr + '页', {
+								icon: 0
+							});
+							// 模拟分页加载数据
+							refreshTasksList(false);
+						}
+					}
+				});
+
+				// 刷新任务列表按钮点击事件
+				$('#refreshTasksList').click(function() {
+					refreshTasksList();
+				});
+
+				// 重置筛选条件
+				$('#resetFilters').click(function() {
+					$('#taskSearchInput').val('');
+					$('select[name="statusFilter"]').val('');
+					$('select[name="ruleFilter"]').val('');
+					form.render('select');
+					refreshTasksList();
+				});
+
+				// 搜索和筛选变化时刷新列表
+				$('#taskSearchInput').on('input', function(e) {
+					// 延迟搜索，避免输入过程中频繁刷新
+					clearTimeout($(this).data('searchTimeout'));
+					$(this).data('searchTimeout', setTimeout(function() {
+						refreshTasksList();
+					}, 500));
+				});
+
+				form.on('select(statusFilter)', function(data) {
+					refreshTasksList();
+				});
+
+				form.on('select(ruleFilter)', function(data) {
+					refreshTasksList();
+				});
+
+				// 新建任务按钮
+				$('#addNewTaskBtn').click(function() {
+					window.location.href = 'task-config.html';
+				});
+
+				// 批量操作按钮
+				$('#batchOperateBtn').click(function() {
+					var checkedCount = $('input[type="checkbox"][data-id]:checked').length;
+					if (checkedCount === 0) {
+						layer.msg('请先选择需要操作的任务', {
+							icon: 2
+						});
+						return;
+					}
+
+					$('#selectedCount').text(checkedCount);
+					// 显示弹窗
+					$('#batchOperateModal').css('display', 'block');
+					setTimeout(function() {
+						$('#batchOperateModal').addClass('layui-anim layui-anim-up');
+					}, 10);
+				});
+
+				// 关闭批量操作弹窗
+				$('#closeBatchModal').click(function() {
+					$('#batchOperateModal').removeClass('layui-anim layui-anim-up');
+					setTimeout(function() {
+						$('#batchOperateModal').css('display', 'none');
+					}, 300);
+				});
+
+				// 批量操作 - 开始/继续
+				$('#batchStartBtn').click(function() {
+					batchOperate('开始', function(taskId) {
+						// 这里是实际操作逻辑
+						return true;
+					});
+				});
+
+				// 批量操作 - 暂停
+				$('#batchPauseBtn').click(function() {
+					batchOperate('暂停', function(taskId) {
+						// 这里是实际操作逻辑
+						return true;
+					});
+				});
+
+				// 批量操作 - 停止
+				$('#batchStopBtn').click(function() {
+					batchOperate('停止', function(taskId) {
+						// 这里是实际操作逻辑
+						return true;
+					});
+				});
+
+				// 批量操作 - 删除
+				$('#batchDeleteBtn').click(function() {
+					var checkedCount = $('input[type="checkbox"][data-id]:checked').length;
+					layer.confirm('确定要删除选中的 ' + checkedCount + ' 个任务吗？此操作不可恢复', {
+						icon: 3,
+						title: '警告'
+					}, function(index) {
+						layer.close(index);
+						batchOperate('删除', function(taskId) {
+							// 这里是实际删除逻辑
+							return true;
+						});
+					});
+				});
+
+				// 批量操作通用函数
+				function batchOperate(action, operateFunc) {
+					var checkedItems = $('input[type="checkbox"][data-id]:checked');
+					var successCount = 0;
+
+					// 显示加载动画
+					layer.load(2);
+
+					// 模拟批量操作
+					setTimeout(function() {
+						checkedItems.each(function() {
+							var taskId = $(this).data('id');
+							if (operateFunc(taskId)) {
+								successCount++;
+								// 如果是删除操作，从表格中移除行
+								if (action === '删除') {
+									$(this).closest('tr').remove();
+								}
+							}
+						});
+
+						// 关闭弹窗和加载动画
+						$('#batchOperateModal').removeClass('layui-anim layui-anim-up');
+						setTimeout(function() {
+							$('#batchOperateModal').css('display', 'none');
+						}, 300);
+						layer.closeAll('loading');
+
+						// 显示操作结果
+						layer.msg(`成功${action} ${successCount}/${checkedItems.length} 个任务`, {
+							icon: 1
+						});
+
+						// 取消全选状态
+						$('#checkAll').prop('checked', false);
+						form.render('checkbox');
+					}, 1000);
+				}
+
+				// 暂停任务
+				$(document).on('click', '.pause-task', function() {
+					var taskId = $(this).data('id');
+					var taskName = $(this).closest('tr').find('td:eq(2)').text();
+
+					layer.confirm('确定要暂停任务【' + taskName + '】吗？', {
+						icon: 3,
+						title: '提示'
+					}, function(index) {
+						layer.close(index);
+
+						// 模拟暂停操作
+						layer.load(2);
+						setTimeout(function() {
+							layer.closeAll('loading');
+							layer.msg('任务【' + taskName + '】已暂停', {
+								icon: 1
+							});
+
+							// 更新任务状态
+							var $tr = $(`.pause-task[data-id="${taskId}"]`).closest('tr');
+							$tr.find('.status-tag').removeClass('status-running').addClass(
+								'status-paused').text('已暂停');
+
+							// 更新操作按钮
+							var actionsHtml = `
+                            <div class="table-actions">
+                                <span class="table-action-btn success resume-task" data-id="${taskId}">
+                                    <i class="layui-icon layui-icon-play"></i> 继续
+                                </span>
+                                <span class="table-action-btn danger stop-task" data-id="${taskId}">
+                                    <i class="layui-icon layui-icon-stop"></i> 停止
+                                </span>
+                                <span class="table-action-btn view-task" data-id="${taskId}">
+                                    <i class="layui-icon layui-icon-eye"></i> 查看
+                                </span>
+                            </div>
+                        `;
+							$tr.find('td:last-child').html(actionsHtml);
+						}, 600);
+					});
+				});
+
+				// 继续任务
+				$(document).on('click', '.resume-task', function() {
+					var taskId = $(this).data('id');
+					var taskName = $(this).closest('tr').find('td:eq(2)').text();
+
+					// 模拟继续操作
+					layer.load(2);
+					setTimeout(function() {
+						layer.closeAll('loading');
+						layer.msg('任务【' + taskName + '】已继续运行', {
+							icon: 1
+						});
+
+						// 更新任务状态
+						var $tr = $(`.resume-task[data-id="${taskId}"]`).closest('tr');
+						$tr.find('.status-tag').removeClass('status-paused').addClass('status-running')
+							.text('运行中');
+
+						// 更新操作按钮
+						var actionsHtml = `
+                        <div class="table-actions">
+                            <span class="table-action-btn warning pause-task" data-id="${taskId}">
+                                <i class="layui-icon layui-icon-pause"></i> 暂停
+                            </span>
+                            <span class="table-action-btn danger stop-task" data-id="${taskId}">
+                                <i class="layui-icon layui-icon-stop"></i> 停止
+                            </span>
+                            <span class="table-action-btn view-task" data-id="${taskId}">
+                                <i class="layui-icon layui-icon-eye"></i> 查看
+                            </span>
+                        </div>
+                    `;
+						$tr.find('td:last-child').html(actionsHtml);
+					}, 600);
+				});
+
+				// 停止任务
+				$(document).on('click', '.stop-task', function() {
+					var taskId = $(this).data('id');
+					var taskName = $(this).closest('tr').find('td:eq(2)').text();
+
+					layer.confirm('确定要停止任务【' + taskName + '】吗？', {
+						icon: 3,
+						title: '警告'
+					}, function(index) {
+						layer.close(index);
+
+						// 模拟停止操作
+						layer.load(2);
+						setTimeout(function() {
+							layer.closeAll('loading');
+							layer.msg('任务【' + taskName + '】已停止', {
+								icon: 1
+							});
+
+							// 更新任务状态
+							var $tr = $(`.stop-task[data-id="${taskId}"]`).closest('tr');
+							$tr.find('.status-tag').removeClass('status-running status-paused')
+								.addClass('status-failed').text('已失败');
+
+							// 更新操作按钮
+							var actionsHtml = `
+                            <div class="table-actions">
+                                <span class="table-action-btn success restart-task" data-id="${taskId}">
+                                    <i class="layui-icon layui-icon-refresh"></i> 重试
+                                </span>
+                                <span class="table-action-btn view-task" data-id="${taskId}">
+                                    <i class="layui-icon layui-icon-eye"></i> 查看
+                                </span>
+                                <span class="table-action-btn view-log" data-id="${taskId}">
+                                    <i class="layui-icon layui-icon-info-circle"></i> 日志
+                                </span>
+                            </div>
+                        `;
+							$tr.find('td:last-child').html(actionsHtml);
+						}, 600);
+					});
+				});
+
+				// 重新运行任务
+				$(document).on('click', '.restart-task', function() {
+					var taskId = $(this).data('id');
+					var taskName = $(this).closest('tr').find('td:eq(2)').text();
+
+					// 模拟重新运行操作
+					layer.load(2);
+					setTimeout(function() {
+						layer.closeAll('loading');
+						layer.msg('任务【' + taskName + '】已重新开始', {
+							icon: 1
+						});
+
+						// 更新任务状态
+						var $tr = $(`.restart-task[data-id="${taskId}"]`).closest('tr');
+						$tr.find('.status-tag').removeClass('status-completed status-failed').addClass(
+							'status-running').text('运行中');
+						$tr.find('.progress-bar').removeClass('progress-completed progress-failed')
+							.addClass('progress-running').css('width', '10%');
+						$tr.find('.progress-text').text('10%');
+
+						// 更新时间
+						var now = new Date();
+						var startTime = now.getFullYear() + '-' +
+							(now.getMonth() + 1).toString().padStart(2, '0') + '-' +
+							now.getDate().toString().padStart(2, '0') + ' ' +
+							now.getHours().toString().padStart(2, '0') + ':' +
+							now.getMinutes().toString().padStart(2, '0');
+
+						var endTime = new Date(now.getTime() + 90 * 60000); // 90分钟后
+						var estimateEndTime = endTime.getFullYear() + '-' +
+							(endTime.getMonth() + 1).toString().padStart(2, '0') + '-' +
+							endTime.getDate().toString().padStart(2, '0') + ' ' +
+							endTime.getHours().toString().padStart(2, '0') + ':' +
+							endTime.getMinutes().toString().padStart(2, '0');
+
+						$tr.find('td:eq(7)').text(startTime);
+						$tr.find('td:eq(8)').text(estimateEndTime);
+
+						// 更新操作按钮
+						var actionsHtml = `
+                        <div class="table-actions">
+                            <span class="table-action-btn warning pause-task" data-id="${taskId}">
+                                <i class="layui-icon layui-icon-pause"></i> 暂停
+                            </span>
+                            <span class="table-action-btn danger stop-task" data-id="${taskId}">
+                                <i class="layui-icon layui-icon-stop"></i> 停止
+                            </span>
+                            <span class="table-action-btn view-task" data-id="${taskId}">
+                                <i class="layui-icon layui-icon-eye"></i> 查看
+                            </span>
+                        </div>
+                    `;
+						$tr.find('td:last-child').html(actionsHtml);
+					}, 800);
+				});
+
+				// 查看任务详情
+				$(document).on('click', '.view-task', function() {
+					var taskId = $(this).data('id');
+					var taskName = $(this).closest('tr').find('td:eq(2)').text();
+					layer.msg(`查看任务【${taskName}】的详情`, {
+						icon: 0
+					});
+					// 实际应用中这里应该打开任务详情页面或弹窗
+				});
+
+				// 查看任务数据
+				$(document).on('click', '.view-data', function() {
+					var taskId = $(this).data('id');
+					var taskName = $(this).closest('tr').find('td:eq(2)').text();
+					layer.msg(`查看任务【${taskName}】的采集数据`, {
+						icon: 0
+					});
+					// 实际应用中这里应该跳转到数据预览页面
+				});
+
+				// 查看任务日志
+				$(document).on('click', '.view-log', function() {
+					var taskId = $(this).data('id');
+					var taskName = $(this).closest('tr').find('td:eq(2)').text();
+					layer.msg(`查看任务【${taskName}】的运行日志`, {
+						icon: 0
+					});
+					// 实际应用中这里应该打开日志查看页面或弹窗
+				});
+
+				// 刷新任务列表函数
+				function refreshTasksList(showMsg = true) {
+					// 获取表格元素
+					var $table = $('#tasksTable');
+					var $tbody = $table.find('tbody');
+
+					// 显示加载动画
+					layer.load(2);
+
+					// 模拟数据加载延迟
+					setTimeout(function() {
+						// 保存当前滚动位置
+						var scrollTop = $(window).scrollTop();
+
+						// 清空表格内容，显示加载中提示
+						$tbody.html(
+							'<tr><td colspan="10" style="text-align: center; padding: 30px;"><i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i> 正在加载任务数据...</td></tr>'
+							);
+
+						// 模拟数据加载
+						setTimeout(function() {
+							// 恢复表格内容（实际应用中这里应该是从服务器获取最新数据）
+							$tbody.html(`
+                            <tr>
+                                <td><input type="checkbox" lay-skin="primary" data-id="1"></td>
+                                <td>1</td>
+                                <td>新闻网站采集</td>
+                                <td>https://news.example.com</td>
+                                <td>新闻文章采集</td>
+                                <td><span class="status-tag status-running">运行中</span></td>
+                                <td>
+                                    <div class="progress-container">
+                                        <div class="progress-bar progress-running" style="width: 65%;"></div>
+                                    </div>
+                                    <div class="progress-text">65%</div>
+                                </td>
+                                <td>2024-05-10 08:30</td>
+                                <td>2024-05-10 10:00</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <span class="table-action-btn warning pause-task" data-id="1">
+                                            <i class="layui-icon layui-icon-pause"></i> 暂停
+                                        </span>
+                                        <span class="table-action-btn danger stop-task" data-id="1">
+                                            <i class="layui-icon layui-icon-stop"></i> 停止
+                                        </span>
+                                        <span class="table-action-btn view-task" data-id="1">
+                                            <i class="layui-icon layui-icon-eye"></i> 查看
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" lay-skin="primary" data-id="2"></td>
+                                <td>2</td>
+                                <td>电商价格监控</td>
+                                <td>https://mall.example.com</td>
+                                <td>电商产品信息采集</td>
+                                <td><span class="status-tag status-running">运行中</span></td>
+                                <td>
+                                    <div class="progress-container">
+                                        <div class="progress-bar progress-running" style="width: 32%;"></div>
+                                    </div>
+                                    <div class="progress-text">32%</div>
+                                </td>
+                                <td>2024-05-10 09:15</td>
+                                <td>2024-05-10 11:45</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <span class="table-action-btn warning pause-task" data-id="2">
+                                            <i class="layui-icon layui-icon-pause"></i> 暂停
+                                        </span>
+                                        <span class="table-action-btn danger stop-task" data-id="2">
+                                            <i class="layui-icon layui-icon-stop"></i> 停止
+                                        </span>
+                                        <span class="table-action-btn view-task" data-id="2">
+                                            <i class="layui-icon layui-icon-eye"></i> 查看
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" lay-skin="primary" data-id="3"></td>
+                                <td>3</td>
+                                <td>社交媒体评论采集</td>
+                                <td>https://social.example.com</td>
+                                <td>社交媒体评论采集</td>
+                                <td><span class="status-tag status-paused">已暂停</span></td>
+                                <td>
+                                    <div class="progress-container">
+                                        <div class="progress-bar progress-paused" style="width: 45%;"></div>
+                                    </div>
+                                    <div class="progress-text">45%</div>
+                                </td>
+                                <td>2024-05-10 07:00</td>
+                                <td>--</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <span class="table-action-btn success resume-task" data-id="3">
+                                            <i class="layui-icon layui-icon-play"></i> 继续
+                                        </span>
+                                        <span class="table-action-btn danger stop-task" data-id="3">
+                                            <i class="layui-icon layui-icon-stop"></i> 停止
+                                        </span>
+                                        <span class="table-action-btn view-task" data-id="3">
+                                            <i class="layui-icon layui-icon-eye"></i> 查看
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" lay-skin="primary" data-id="4"></td>
+                                <td>4</td>
+                                <td>论坛帖子采集</td>
+                                <td>https://forum.example.com</td>
+                                <td>通用网页内容采集</td>
+                                <td><span class="status-tag status-completed">已完成</span></td>
+                                <td>
+                                    <div class="progress-container">
+                                        <div class="progress-bar progress-completed" style="width: 100%;"></div>
+                                    </div>
+                                    <div class="progress-text">100%</div>
+                                </td>
+                                <td>2024-05-10 06:00</td>
+                                <td>2024-05-10 07:30</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <span class="table-action-btn success restart-task" data-id="4">
+                                            <i class="layui-icon layui-icon-refresh"></i> 重新运行
+                                        </span>
+                                        <span class="table-action-btn view-task" data-id="4">
+                                            <i class="layui-icon layui-icon-eye"></i> 查看
+                                        </span>
+                                        <span class="table-action-btn view-data" data-id="4">
+                                            <i class="layui-icon layui-icon-table"></i> 数据
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" lay-skin="primary" data-id="5"></td>
+                                <td>5</td>
+                                <td>博客文章采集</td>
+                                <td>https://blog.example.com</td>
+                                <td>新闻文章采集</td>
+                                <td><span class="status-tag status-failed">已失败</span></td>
+                                <td>
+                                    <div class="progress-container">
+                                        <div class="progress-bar progress-failed" style="width: 28%;"></div>
+                                    </div>
+                                    <div class="progress-text">28%</div>
+                                </td>
+                                <td>2024-05-10 05:20</td>
+                                <td>--</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <span class="table-action-btn success restart-task" data-id="5">
+                                            <i class="layui-icon layui-icon-refresh"></i> 重试
+                                        </span>
+                                        <span class="table-action-btn view-task" data-id="5">
+                                            <i class="layui-icon layui-icon-eye"></i> 查看
+                                        </span>
+                                        <span class="table-action-btn view-log" data-id="5">
+                                            <i class="layui-icon layui-icon-info-circle"></i> 日志
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+
+							// 恢复滚动位置
+							$(window).scrollTop(scrollTop);
+
+							// 重新渲染复选框
+							form.render('checkbox');
+
+							// 关闭加载动画
+							layer.closeAll('loading');
+
+							// 显示刷新成功提示
+							if (showMsg) {
+								layer.msg('任务列表已更新', {
+									icon: 1,
+									time: 1500
+								});
+							}
+						}, 800);
+					}, 500);
+				}
+
+				// 模拟任务进度更新
+				function simulateProgressUpdates() {
+					setInterval(function() {
+						// 随机更新运行中任务的进度
+						$('.status-running').closest('tr').each(function() {
+							var $progressBar = $(this).find('.progress-bar');
+							var currentWidth = parseInt($progressBar.css('width'));
+							var parentWidth = $progressBar.parent().width();
+							var currentPercent = Math.round((currentWidth / parentWidth) * 100);
+
+							// 随机增加1-3%的进度
+							var newPercent = currentPercent + Math.floor(Math.random() * 3) + 1;
+							if (newPercent > 100) newPercent = 100;
+
+							$progressBar.css('width', newPercent + '%');
+							$(this).find('.progress-text').text(newPercent + '%');
+
+							// 如果进度达到100%，标记为已完成
+							if (newPercent === 100) {
+								$(this).find('.status-tag').removeClass('status-running').addClass(
+									'status-completed').text('已完成');
+
+								// 更新操作按钮
+								var taskId = $(this).find('input[type="checkbox"]').data('id');
+								var actionsHtml = `
+                                <div class="table-actions">
+                                    <span class="table-action-btn success restart-task" data-id="${taskId}">
+                                        <i class="layui-icon layui-icon-refresh"></i> 重新运行
+                                    </span>
+                                    <span class="table-action-btn view-task" data-id="${taskId}">
+                                        <i class="layui-icon layui-icon-eye"></i> 查看
+                                    </span>
+                                    <span class="table-action-btn view-data" data-id="${taskId}">
+                                        <i class="layui-icon layui-icon-table"></i> 数据
+                                    </span>
+                                </div>
+                            `;
+								$(this).find('td:last-child').html(actionsHtml);
+
+								// 更新预计完成时间为当前时间
+								var now = new Date();
+								var completeTime = now.getFullYear() + '-' +
+									(now.getMonth() + 1).toString().padStart(2, '0') + '-' +
+									now.getDate().toString().padStart(2, '0') + ' ' +
+									now.getHours().toString().padStart(2, '0') + ':' +
+									now.getMinutes().toString().padStart(2, '0');
+								$(this).find('td:eq(8)').text(completeTime);
+							}
+						});
+					}, 5000); // 每5秒更新一次
+				}
+
+				// 启动模拟进度更新
+				simulateProgressUpdates();
+			});
+		</script>
+	</body>
+</html>
